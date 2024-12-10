@@ -1,0 +1,37 @@
+<div mat-dialog-content>
+        <form class="vehicles-VINPrefill-form mb-4 pb-4" [formGroup]="vehicleVinprefillForm">
+          <mat-accordion>
+            <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+              <mat-expansion-panel-header >
+                <mat-panel-title>
+                    Add Vehicles To Your Quote
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-error  mat-dialog-title class="mat-error m-0" id="vinReq" *ngIf="vinStatus?.length < 1 && formSubmit"><em
+                  class="fas fa-exclamation-triangle pr-1"></em>Select atleast one VIN </mat-error>
+              
+               
+                <span class="example-list-section">
+                    <ul>
+                        <li formArrayName="vinList" *ngFor="let vin of vinFormArray.controls | keyvalue; let i = index">
+                            <mat-checkbox id="vin{{i}}" [formControlName]="i" (change)="onVINSelect()">
+                                <p class="pl-2 mb-0">{{vinArrayObj[i].year}} {{vinArrayObj[i].make}} {{vinArrayObj[i].model}}</p>
+                                <p class="pl-2 vin">{{vinArrayObj[i].vin}}</p>                
+                            </mat-checkbox>
+                        </li>
+                    </ul>
+                </span>
+                
+            </mat-expansion-panel>
+            
+            <button mat-button mat-raised-button id="continue" class="mt-1 btn btn-primary btn-next float-right" cdkFocusInitial (click)="onPrefillSubmit()">
+              <span>Continue</span>
+          </button>
+          
+          <button mat-button mat-raised-button id="cancel" class="mt-1 btn float-left" [mat-dialog-close]="true">
+            <span>Cancel</span>
+          </button>
+            
+          </mat-accordion>
+        </form>
+          </div>

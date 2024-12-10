@@ -1,0 +1,69 @@
+.home-sidenav-container {
+    position: absolute;
+    top: 45px;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    background: #eee;
+    // .mat-sidenav-content {
+    //     padding-left: 100px !important;
+    //     padding-right: 100px!important;
+    // } 
+    .mat-sidenav-content {
+        padding-right: 100px!important;
+        background: #E1EDFA;
+    }
+    .mat-sidenav {
+        width: 16%;
+        border-top: 1px solid #bbbaba66;
+        &::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px #fff;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+        &::-webkit-scrollbar {
+            width: 0px;
+            background-color: #fff;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px #fff;
+            background-color: #fff;
+        }  
+         
+        .sidenav-label {
+            // 
+            h5 {
+                color: #716e6e;
+            }
+        }              
+    }   
+}
+  /* 
+    ##Device = Most of the Smartphones Mobiles (Portrait)
+    ##Screen = B/w 320px to 479px
+  */
+  
+  @media (min-width: 480px) and (max-width: 1024px) and (orientation: landscape) {
+    .home-sidenav-container {
+        .mat-sidenav {
+            width: 22%;
+            padding: 5px !important;
+        }
+        .mat-sidenav-content {
+            padding-right: 10px !important;
+        }
+    }
+}
+    @media (min-width: 320px) and (max-width: 480px) {
+        .home-sidenav-container {
+            .mat-sidenav {
+                width: 37%;
+                padding: 5px !important;
+            }
+            .mat-sidenav-content {
+                padding-right: 10px !important;
+            }
+        }
+    }
+

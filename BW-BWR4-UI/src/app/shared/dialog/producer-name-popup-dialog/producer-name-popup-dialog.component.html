@@ -1,0 +1,90 @@
+<div mat-dialog-content>
+    <form class="producer-information-form" [formGroup]="producerInformationForm">
+        <mat-accordion>
+            <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        New Producer Information
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>If you wish to sell Bristol West Insurance polices,
+                    please enter the name and contact information below.
+                    Agency Services will contact the producer within two business days.</p>
+                <br>
+                <div class="row d-flex justify-content-start">
+                    <div class="col-sm-6">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Request Producer Name</mat-label>
+                            <input matInput placeholder="Request Producer Name" (blur)="trimSpace('requestProducerName')" value="" id="requestProducerName"
+                                formControlName="requestProducerName">
+                            <mat-error class="" id="requestProducerNameReq"
+                                *ngIf="hasError('requestProducerName', 'required', 'null', 'null')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>Request Producer Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-6">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="xxx-xxx-xxxx" value="" minlength="12" maxlength="12" id="phone"
+                                formControlName="phone" [preValue]="producerInformationForm.value.phone" [phoneControl]="producerInformationForm.controls['phone']" appPhoneFormat>
+                            <mat-error class=" " id="phoneReq" *ngIf="hasError('phone', 'required', 'null', 'null')">
+                                <em class="fas fa-exclamation-triangle pr-1"></em> Phone is required
+                            </mat-error>
+                            <mat-error class=" " id="phoneValid"
+                                *ngIf="producerInformationForm.controls.phone.invalid && (producerInformationForm.controls.phone.dirty)">
+                                Phone is not valid
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-sm-6">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Email Address</mat-label>
+                            <input matInput placeholder="Email Address" (blur)="trimSpace('emailAddress')" value="" id="emailAddress"
+                                formControlName="emailAddress">
+                            <mat-error class="" id="emailAddressReq"
+                                *ngIf="hasError('emailAddress', 'required', 'null', 'null')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>Email Address is required</mat-error>
+                            <mat-error class=" " id="emailPat"
+                                *ngIf="hasError('emailAddress', 'pattern', 'null', 'null')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> A valid e-mail address must be
+                                entered. Valid
+                                e-mail addresses must contain an at symbol (@) and at least one period (.) Example:
+                                yourname@aol.com
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mt-sm-4">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-6">Line of Business</div>
+                            <div class="col-sm-6">
+
+
+                                <mat-radio-group class="w-100 mandatory-field" id="lineOfBusiness"
+                                    aria-label="Select an option" formControlName="lineOfBusiness">
+                                    <div *ngFor="let lob of lineOfBusinessList; let i=index">
+
+                                        <mat-radio-button [value]="lob.value">{{ lob.viewValue }}</mat-radio-button>
+                                    </div>
+                                </mat-radio-group>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <button mat-raised-button id="send_request"
+                class="mt-3 btn btn-primary btn-next float-right" (click)="submit(producerInformationForm)">
+                Send Request
+            </button>
+            <button mat-raised-button id="cancel" class="mt-3 btn float-left" (click)="dialogRef.close(false)">
+                Cancel
+            </button>            
+        </mat-accordion>
+    </form>
+</div>

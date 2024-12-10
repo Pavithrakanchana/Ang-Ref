@@ -1,0 +1,325 @@
+<h2 class="bw-header3 review" id="topcontent">Review</h2>
+<!-- App Errors -->
+<app-messages></app-messages>
+
+  <div class="bwr-policyinfo-form mt-3">
+    <form [formGroup]="reviewCoverageForm" class="application-form" name="reviewCoverageForm">
+      <div class="premium-content">
+ <div *ngFor="let package of policyPackages">
+        <div class="premium-section">
+          <div class="row pt-2">
+            <div class="col col-5 amount-section">
+              <app-premium [totalPremium]="package.autoCoverages.premiumDetails[0].savingsAmount.theCurrencyAmount">
+              </app-premium>
+              <br>
+              <div class="view-link">
+                <span class="font-bold"><a mat-link href="javascript:void(0)" (click)="printApplicationPackage()">View
+                    Application</a></span>
+            </div>
+          </div>
+            <div class="col col-5">
+              <h3 class="rates-down mb-1">
+                &nbsp;
+              </h3>
+              <div class="due-section">
+                <div class="row row-body mb-2">
+                  <div class="col col-label mat-label-font">Due Today</div>
+                  <div class="col col-val">
+                    <p class="due-premium bold">{{ dueAmountChange | currency }}</p>
+                  </div>
+                </div>
+                <div class="row row-body mb-2">
+                  <div class="col col-label mat-label-font term-align">Term
+                  </div>
+
+                  <div class="col col-val bold term-value">{{ termVal }} months</div>
+                </div>
+                <div *ngFor="let fee of package.policyFees" class="row row-body mb-2">
+                  <div class="col col-label mat-label-font">{{ fee.type }}
+                  </div>
+                  <div class="col col-val bold">{{ fee.theCurrencyAmount || 0 | currency }}</div>
+                </div>
+                <!-- Underwriting fees -->
+                <div *ngFor="let fee of package.underwritingFees">
+                  <div *ngIf="fee.theCurrencyAmount != '0.00' && fee.theCurrencyAmount != '0'"
+                      class="row row-body mb-2">
+                      <div class="col col-label mat-label-font">{{ fee.type }}</div>
+                      <div class="col col-val bold">{{ fee.theCurrencyAmount || 0 | currency }}</div>
+                  </div>
+              </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div *ngFor="let package of policyPackages">
+        <app-policy-fees *ngIf="package.serviceFees.length > 0" [fees]="package.serviceFees"
+          [selectdPackage]="selectedPackage" [package]="package.autoCoverages.packageType"></app-policy-fees>
+      </div>
+      <mat-accordion [multi]="true">
+        <div *ngFor="let package of policyPackages">
+          <app-payplans [payplans]="[storePayPlan]" [form]="reviewCoverageForm"
+            [selectPayPlanCode]="this.selectPayPlanCode"
+            [package]="package.autoCoverages.packageType"
+            [fees]="this.policyFees"  [underWritingFees]="package.underwritingFees!"></app-payplans>
+        </div>
+      </mat-accordion>
+      <mat-accordion [multi]="true">
+        <mat-expansion-panel hideToggle [expanded]="true" id="policyPanel" class="bwr-mat-expansion-panel">
+          <mat-expansion-panel-header id="policyInfoHeaderPanel">
+            <mat-panel-title>
+              <h5 class="bw-header5">Payment Information</h5>
+              <span class="material-icons open">arrow_drop_down</span>
+              <span class="material-icons close">arrow_drop_up</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="paymentinfo-container ">
+              <h4 class="paymentnote-font">Please provide payment information prior to upload</h4>
+              <div >
+                <app-payment-methods [formRef]="reviewCoverageForm" [page]="page" [downpaymentValue]="this.downpaymentValue"
+                  [installmentValue]="this.eftFutureInstallValue"></app-payment-methods>
+              </div>
+              <div class="row">
+                <div class=" col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                  <div class="row">
+                    <div class="col-md-10 col-10">
+                      <mat-label class="font-size-14 font-weight-500">Down Payment</mat-label>
+                      <mat-form-field class="mandatory-field mt-3" appearance="outline">
+                        <mat-label>Down Payment</mat-label>
+                        <input matInput placeholder="Down Payment" id="downPayAmount" value="{{ dueAmountChange | currency:'USD'}}"
+                          [disabled]="true">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class=" col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                  <div class="row">
+                    <div class="col-md-10 col-10">
+                        <mat-label class="font-size-14 font-weight-500">Amount Paid Today</mat-label>
+                       <mat-form-field class="mandatory-field mt-3 input-amount" appearance="outline">
+                        <mat-label>Amount Paid Today</mat-label>
+                        <span matPrefix >$ </span>
+                        <input matInput placeholder="Down Payment" id="amountPaid" formControlName="amountPaid"
+                          (blur)="checkPayAmount($event); trimSpace('amountPaid')">
+                      </mat-form-field>
+                      <mat-error class="" id="amountPaidReq" *ngIf="hasError('amountPaid', 'required')">
+                        Amount Paid Today is required
+                      </mat-error>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div class="payment-modes">
+           <div *ngIf="producerNote">
+              <p class="font-weight-500 font-size-13">{{ producerNote }}</p>
+            </div>
+            <hr class="mt-2 mb-3">
+            <div class="row mb-2">
+              <div class="col col-md-4 col-sm-12 col-xs-12 col-lg-4" *ngIf="downpaymentValue !== 'N'">
+                <mat-label class="font-size-14 font-weight-500">Down Payment</mat-label>
+                <p class="mt-2 mb-0 font-size-13 font-weight-400" *ngIf="(downpaymentValue === eftFutureInstallValue) && ((downpayPaymentMethod && !installmentPaymentMethod ) || (!downpayPaymentMethod && installmentPaymentMethod)) && !isCSR">
+                  <mat-checkbox id="samePaymethods" formControlName="samePaymentChk" (change)="updateSamePaymentInfo()">
+                    Use Same Billing Info for Down Payment and Installment?
+                </mat-checkbox>
+                </p>
+                <div *ngIf="downpaymentValue !== 'N'" class="mb-3" [ngClass]="{'pt-3' : !((downpaymentValue === eftFutureInstallValue) && ((downpayPaymentMethod && !installmentPaymentMethod ) || (!downpayPaymentMethod && installmentPaymentMethod)))}">
+                  <a href="" *ngIf="!this.downpayPaymentMethod" class="payment-link" (click)="displayPaymentDialog('DOWNPAY')">Enter
+                    Payment Information</a>
+
+                  <mat-card *ngIf="this.downpayPaymentMethod" class="payment-card">
+                    <div class="row pb-2">
+                      <div class="col col-12">
+                        <label class="font-size-15 bold">{{(this.downpayPaymentMethod.Type === 'CHQ' || this.downpayPaymentMethod.Type
+                          === 'SAV') ?
+                          'Account Details': 'Card Details'}} </label>
+                        <a href="" *ngIf="this.downpayPaymentMethod" class="payment-link remove-icon-link"
+                          (click)="deletePaymentMethod('DOWNPAY')">
+                          <mat-icon>remove_circle_outline</mat-icon>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="row pb-2">
+                      <div class="col col-12">
+                        <label class="mat-label-font">{{(this.downpayPaymentMethod.Type === 'CHQ' || this.downpayPaymentMethod.Type ===
+                          'SAV') ?
+                          'Account Holder Name': 'Name on Card'}} : {{ this.downpayPaymentMethod.CardHolderName}} </label>
+                      </div>
+                    </div>
+                    <div class="row pb-2" *ngIf="this.downpayPaymentMethod.Type === 'CHQ' || this.downpayPaymentMethod.Type === 'SAV'">
+                      <div class="col col-12">
+                        <label class="mat-label-font">Bank Name: {{this.downpayPaymentMethod.BankName}}</label>
+                      </div>
+                    </div>
+                    <div class="row pb-2">
+                      <div class="col col-12">
+                        <label class="mat-label-font">{{(this.downpayPaymentMethod.Type === 'CHQ' || this.downpayPaymentMethod.Type ===
+                          'SAV') ?
+                          'Account Number' : 'Card Number'}} : {{ this.downpayPaymentMethod.MaskedAccountNumber}} </label>
+                        <span>
+                          <mat-icon class="account-icon">{{(this.downpayPaymentMethod.Type === 'CHQ' || this.downpayPaymentMethod.Type
+                            === 'SAV') ? 'account_balance'
+                            : 'credit_card'}} </mat-icon>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="row pb-2" *ngIf="this.downpayPaymentMethod.ExpiryDate">
+                      <div class="col col-12">
+                      <label class="mat-label-font">Expiration Date: {{ this.downpayPaymentMethod.ExpiryDate}} </label>
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="this.downpayPaymentMethod.zipCode">
+                      <div class="col col-12">
+                      <label class="mat-label-font">Billing Zip Code: {{ this.downpayPaymentMethod.zipCode }} </label>
+                      </div>
+                    </div>
+                  </mat-card>
+
+
+
+
+
+
+                </div>
+              </div>
+              <div class=" col col-md-4 col-sm-12 col-xs-12 col-lg-4" *ngIf="eftFutureInstallValue !== 'N'">
+                <mat-label class="font-size-14 font-weight-500">Installment Payments</mat-label>
+              <div *ngIf="eftFutureInstallValue !== 'N'"  class="pt-3 mb-3 installment-payment" [ngClass]="{'mt-4': (downpaymentValue === eftFutureInstallValue) && ((downpayPaymentMethod && !installmentPaymentMethod ) || (!downpayPaymentMethod && installmentPaymentMethod))}">
+                <a href="" *ngIf=" !this.installmentPaymentMethod" class="payment-link"
+                  (click)="displayPaymentDialog('INSTALL')">Enter Payment Information</a>
+                <mat-card *ngIf="this.installmentPaymentMethod" class="payment-card">
+                  <div class="row pb-2">
+                    <div class="col col-12">
+                      <label class="font-size-15 bold">{{(this.installmentPaymentMethod.Type === 'CHQ' || this.installmentPaymentMethod.Type
+                        === 'SAV') ?
+                        'Account Details': 'Card Details'}} </label>
+                      <a href="" *ngIf="this.installmentPaymentMethod" class="payment-link remove-icon-link"
+                        (click)="deletePaymentMethod('INSTALL')">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="row pb-2">
+                    <div class="col col-12">
+                      <label class="mat-label-font">{{(this.installmentPaymentMethod.Type === 'CHQ' ||
+                        this.installmentPaymentMethod.Type ===
+                        'SAV') ? 'Account Holder Name': 'Name on Card'}} : {{ this.installmentPaymentMethod.CardHolderName}} </label>
+                    </div>
+                  </div>
+                  <div class="row pb-2"
+                    *ngIf="this.installmentPaymentMethod.Type === 'CHQ' || this.installmentPaymentMethod.Type === 'SAV'">
+                    <div class="col col-12">
+                      <label class="mat-label-font">Bank Name: {{this.installmentPaymentMethod.BankName}}</label>
+                    </div>
+                  </div>
+                  <div class="row pb-2">
+                    <div class="col col-12">
+                      <label class="mat-label-font">{{(this.installmentPaymentMethod.Type === 'CHQ' ||
+                        this.installmentPaymentMethod.Type ===
+                        'SAV') ? 'Account Number' : 'Card Number'}} : {{ this.installmentPaymentMethod.MaskedAccountNumber}} </label>
+                      <span>
+                        <mat-icon class="account-icon">{{(this.installmentPaymentMethod.Type === 'CHQ' ||
+                          this.installmentPaymentMethod.Type === 'SAV') ?
+                          'account_balance' : 'credit_card'}} </mat-icon>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row pb-2" *ngIf="this.installmentPaymentMethod.ExpiryDate">
+                    <div class="col col-12">
+                    <label class="mat-label-font">Expiration Date: {{ this.installmentPaymentMethod.ExpiryDate }} </label>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="this.installmentPaymentMethod.zipCode">
+                    <div class="col col-12">
+                    <label class="mat-label-font">Billing Zip Code: {{ this.installmentPaymentMethod.zipCode }} </label>
+                    </div>
+                  </div>
+                </mat-card>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <mat-accordion [multi]="true">
+        <mat-expansion-panel hideToggle [expanded]="true" id="policyPanel" class="bwr-mat-expansion-panel">
+          <mat-expansion-panel-header id="policyInfoHeaderPanel">
+            <mat-panel-title>
+              <h5 class="bw-header5">Policy Level Coverages</h5>
+              <span class="material-icons open">arrow_drop_down</span>
+              <span class="material-icons close">arrow_drop_up</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row coverage-cont p-2" *ngFor="let coverage of policyCoverageAbs">
+            <div class="col-lg-3 col-md-3 col-sm-8 col-xs-10 mat-label-font content-centered">
+              {{ coverage.description }}
+            </div>
+              <div class="col-lg-5 col-md-5 col-sm-8 col-xs-10 bold">
+                {{ coverage.value }}
+              </div>
+            </div>
+
+
+        </mat-expansion-panel>
+      </mat-accordion>
+      <mat-accordion [multi]="true">
+        <mat-expansion-panel hideToggle [expanded]="false" id="VehCovPanel" class="bwr-mat-expansion-panel mb-2"
+          *ngFor="let vehicle of vehicleList; let i = index;">
+          <mat-expansion-panel-header id="coveragesOptHeaderPanel">
+            <mat-panel-title>
+              <h5 *ngIf="!this.nonOwner" class="bw-header5">{{i+1}}. {{vehicle.vin}}
+                {{vehicle.year}} {{vehicle.make}} {{vehicle.model}} - {{vehicle.theCurrencyAmount |
+                currency:'USD':'symbol-narrow':'0.2-2'}}</h5>
+
+             <h5 *ngIf="this.nonOwner" class="bw-header5">{{boardFormOrNNO}}</h5>
+              <span class="material-icons open">arrow_drop_down</span>
+              <span class="material-icons close">arrow_drop_up</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row coverage-cont p-2" *ngFor="let coverage of vehicleCoverageAbs(i)">
+            <div class="col-lg-3 col-md-3 col-sm-8 col-xs-10 mat-label-font content-centered">
+              <div class="maticon-align">
+              {{ coverage.description }}
+              <mat-icon id="additionalEquipmentHelp{{i}}" matTooltipClass="bwr-tooltip" (click)="loadHelpText('48')" class ="maticon-style"
+               *ngIf="coverage.code === 'CEQ'">info</mat-icon>
+              <mat-icon *ngIf="coverage.code === 'EXTR'" class ="maticon-style"
+                 id="rentalHelp{{i}}" matTooltipClass="bwr-tooltip" (click)="loadHelpText('50')">info</mat-icon>
+              <mat-icon *ngIf="coverage.code === 'ALL'"class ="maticon-style"
+                 id="leaseHelp{{i}}" matTooltipClass="bwr-tooltip" (click)="loadHelpText('51')">info</mat-icon>
+              <mat-icon *ngIf="coverage.code === 'RA' && !this.applicantNonOwner" class ="maticon-style"
+                 id="roadSideHelp{{i}}" matTooltipClass="bwr-tooltip" (click)="loadHelpText('632')">info</mat-icon>
+          </div>
+            </div>
+
+            <div class="col-lg-5 col-md-5 col-sm-8 col-xs-10 bold">
+                {{ coverage.value }}
+            </div>
+            </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <div class="col font-bold">
+        <h4>REMINDER: Review the application and applicant questionnaire prior to uploading the policy. </h4>
+      </div>
+      <div class="row">
+        <div class="col col-6">
+          <button mat-raised-button id="back" (click)="onClickBack(reviewCoverageForm)"
+            class="btn btn-primary btn-next float-left">
+            <span>
+              < Back</span> </button>
+        </div>
+        <div class="col col-6">
+          <button mat-raised-button id="back" #next (click)="viewDocsAndUploadApplication(reviewCoverageForm)" class="btn btn-warning btn-next float-right" [disabled]="!paymetnSetup">
+            <span>
+              View Docs & Upload Application</span> </button>
+        </div>
+      </div>
+    </form>
+  </div>
+

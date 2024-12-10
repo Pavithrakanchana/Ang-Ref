@@ -1,0 +1,22 @@
+  
+  ::ng-deep .save-exit-dialog .mat-dialog-container {
+    padding: 10px 16px 16px 16px !important;
+      color: #000;
+      overflow-y: hidden;
+      overflow-x: hidden;
+  }
+  .mat-dialog-actions {
+    display: inline;
+  }
+
+  ::ng-deep .confirm-dailog {
+    .mat-dialog-container {
+      padding: 0px 16px 16px 16px !important;
+      color: #000;
+      overflow-y: hidden;
+      overflow-x: hidden;
+    }
+    .mat-dialog-actions {
+      display: inline;
+    }
+  }

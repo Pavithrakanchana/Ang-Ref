@@ -1,0 +1,50 @@
+<form class="violation-form" [formGroup]="violationForm">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10 col-10">
+                    <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                        <mat-label>Accident/Violation</mat-label>
+                        <mat-select placeholder="Code" [id]="'violationCode' + driverId + _index"
+                            formControlName="violationCode">
+                            <mat-option value="">Select</mat-option>
+                            <mat-option *ngFor="let code of violationCodes" [value]="code.value">
+                                {{code.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error class=" " *ngIf="!violationForm.controls.violationCode?.valid">
+                            Accident/Violation is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10 col-10">
+                    <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                        <!-- Occurence Date-->
+                        <mat-label>Occurence Date</mat-label>
+                        <input matInput appDateformatter [matDatepicker]="occurenceDate"
+                            [id]="'occurenceDate' + driverId + _index" formControlName="occurenceDate">
+                        <mat-datepicker #occurenceDate></mat-datepicker>
+                        <mat-datepicker-toggle matSuffix [for]="occurenceDate"></mat-datepicker-toggle>
+                        <mat-error class=" " *ngIf="!violationForm.controls.occurenceDate?.valid">
+                            Occurence Date is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <button mat-raised-button *ngIf="!enableEdit.status" class="btn btn-primary btn-next add-btn"
+                (click)="addEditViolation(violationForm.value)">ADD</button>
+
+            <button mat-raised-button *ngIf="enableEdit.status" class="btn btn-primary btn-next add-btn"
+                (click)="addEditViolation(violationForm.value)">SAVE</button>
+            <div mat-raised-button class="btn cancel-btn" (mousedown)="cancel($event)">CANCEL</div>
+        </div>
+    </div>
+</form>

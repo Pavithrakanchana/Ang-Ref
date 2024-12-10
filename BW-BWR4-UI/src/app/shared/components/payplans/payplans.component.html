@@ -1,0 +1,51 @@
+<form [formGroup]="form">
+    <div class='bwr-rates-form'>
+        <mat-expansion-panel hideToggle [expanded]="true" id="CovOptPanel"
+            class="bwr-mat-expansion-panel pay-plan-panel">
+            <mat-expansion-panel-header id="payPlanHeaderPanel">
+                <mat-panel-title>
+                    <h5 class="bw-header5">Pay Plan Selection</h5>
+                    <span class="material-icons open">arrow_drop_down</span>
+                    <span class="material-icons close">arrow_drop_up</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-radio-group aria-label="Select an option" id="payPlan" formControlName="payPlan"
+                (change)="onPayPlanChange($event)">
+                <div class="rates-flex-container" *ngIf="this.payplans">
+
+                    <div *ngFor="let plan of payplans; let i=index" class="container-list selected-plan"
+                        [class.selected-plan]="verifySelectedPayplan(plan)">
+                        <div class="radio-btn-container">
+                            <mat-radio-button [value]="plan" id="{{plan.payPlan + '_' + plan.electronicFundTransfer?.requiredIndicator}}" [checked]="verifySelectedPayplan(plan)">
+                                {{this.payplanLabel[i]}}</mat-radio-button>
+
+                            <p class="bold">{{ this.downpayPercent[i] || 0 }}% Down</p>
+                            <div class="form-group row">
+                                <label for="premium" class="col-sm-6 col-form-label">Premium</label>
+                                <div class="col-sm-6">
+                                    <input type="text" readonly class="form-control-plaintext" id="premium{{i}}"
+                                        value="{{ generateTotalPremium(plan) || 0 | currency}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="downpayment" class="col-sm-6 col-form-label">Down Payment</label>
+                                <div class="col-sm-6">
+                                    <input type="text" readonly class="form-control-plaintext" id="downPayment{{i}}"
+                                        value="{{ plan.downPayment?.theCurrencyAmount || 0 | currency }}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="installment" class="col-sm-6 col-form-label"># of
+                                    Installments/Amount</label>
+                                <div class="col-sm-6">
+                                    <input type="text" readonly class="form-control-plaintext" id="installment{{i}}"
+                                        value="{{ plan.installment?.numberOfInstallments || 0 }} @ {{ plan.installment?.theCurrencyAmount || 0 | currency }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-radio-group>
+        </mat-expansion-panel>
+    </div>
+</form>

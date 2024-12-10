@@ -1,0 +1,25 @@
+.bwr-payment-iframe-header {
+    height: 28px;
+    background: #025aaa;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding: 12px 20px 30px 20px;
+  }
+  ::ng-deep .full-width-dialog {
+    .mat-dialog-content {
+        padding-top: 15px;
+        text-align: center;
+        color: #000 !important;
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    .mat-dialog-actions {
+      justify-content: center !important;
+  }
+  .mat-dialog-container {
+    padding: 0px !important;
+    color: #fff !important;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+  }

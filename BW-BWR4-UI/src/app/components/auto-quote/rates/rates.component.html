@@ -1,0 +1,154 @@
+<h2 class="bw-header3 rates" id="topcontent">Rate</h2>
+
+<!-- App Errors -->
+<app-messages>{{ errorMessage }}</app-messages>
+
+<div class="bwr-rates-form" >
+    <form [formGroup]="ratesForm">
+
+        <mat-tab-group animationDuration="0ms">
+            <div *ngFor="let package of policyPackage">
+
+                <mat-tab label="PREMIUM">
+                    <div class="row pt-2">
+
+                        <div class="col col-6">
+
+                            <app-premium
+                                [totalPremium]="package.autoCoverages.premiumDetails[0].savingsAmount.theCurrencyAmount">
+                            </app-premium>
+                            <p class="mt-1 mb-2 mat-tab-p">*{{ mvrOrderMsg }}</p>
+
+                            <div class="" *ngIf="recalculateStatus">
+                                <button mat-raised-button class="add-btn" id="recalculateBtn"
+                                    (click)="recalculate('POSTCall', ratesForm)">
+                                    RECALCULATE
+                                </button>
+                            </div>
+                            <div class="bold" *ngIf="!recalculateStatus">
+                                <a mat-link href="javascript:void(0)" (click)="printSheet()">Print Quote Sheet</a>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <h3 class="rates-down mb-1">
+                                &nbsp;
+                            </h3>
+
+                            <div class="table-div">
+                                <div class="row row-body mb-2">
+                                    <div class="col col-label mat-label-font">Due Today</div>
+                                    <div class="col col-val">
+                                        <p class="due-premium">{{ dueAmountChange |
+                                            currency:'USD':'symbol-narrow':'0.2-2'}}</p>
+                                    </div>
+                                </div>
+                                <div class="row row-body mb-2">
+
+                                    <div class="col col-label mat-label-font">Term
+                                    </div>
+
+
+                                    <div class="col col-val bold">{{ termVal }} months</div>
+                                </div>
+
+                                <div *ngFor="let fee of package.policyFees">
+                                    <div *ngIf="fee.theCurrencyAmount != '0.00' && fee.theCurrencyAmount != '0'"
+                                        class="row row-body mb-2">
+                                        <div class="col col-label mat-label-font">{{ fee.type }}</div>
+                                        <div class="col col-val bold">{{ fee.theCurrencyAmount || 0 | currency }}</div>
+                                    </div>
+                                </div>
+                                <!-- Underwriting fees -->
+                                <div *ngFor="let fee of package.underwritingFees">
+                                  <div *ngIf="fee.theCurrencyAmount != '0.00' && fee.theCurrencyAmount != '0'"
+                                      class="row row-body mb-2">
+                                      <div class="col col-label mat-label-font">{{ fee.type }}</div>
+                                      <div class="col col-val bold">{{ fee.theCurrencyAmount || 0 | currency }}</div>
+                                  </div>
+                              </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </mat-tab>
+            </div>
+        </mat-tab-group>
+        <div *ngFor="let package of policyPackage">
+            <app-policy-fees *ngIf="package.serviceFees.length > 0" [fees]="package.serviceFees"
+                [selectdPackage]="selectedPackage" [package]="package.autoCoverages.packageType"></app-policy-fees>
+        </div>
+        <mat-accordion [multi]="true">
+            <!-- Pay Plan Component-->
+            <div *ngFor="let package of policyPackage">
+                <app-payplans (clickHandler)="recalculate('POSTCall', ratesForm)"
+                    [payplans]="package.autoCoverages.payplansDetails" [form]="ratesForm"
+                    [selectPayPlanCode]="this.selectPayPlanCode" [eftPaymentMethods]="eftPaymentMethods"
+                    [package]="package.autoCoverages.packageType"
+                    [fees]="package.policyFees" [underWritingFees]="package.underwritingFees!"></app-payplans>
+            </div>
+
+            <!-- Payment method componenent -->
+            <mat-expansion-panel hideToggle [expanded]="true" id="policyPanel" class="bwr-mat-expansion-panel">
+                <mat-expansion-panel-header id="policyInfoHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5">Policy Level Discounts</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-payment-methods *ngIf="this.valuesLoaded === true" [page]="page" [formRef]="ratesForm"
+                    (payMethodChangeEvent)="checkPayMenthodChange($event)" [downpaymentValue]="this.downpaymentValue"
+                    [installmentValue]="this.eftFutureInstallValue" [hasProducerSweep]="this.hasProducerSweep"></app-payment-methods>
+            </mat-expansion-panel>
+
+
+
+            <mat-expansion-panel hideToggle [expanded]="false" id="CovOptPanel" class="bwr-mat-expansion-panel mb-2">
+                <mat-expansion-panel-header id="coveragesOptHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5">Policy Level Coverages</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Policy Coverages Component-->
+                <app-policycoverage-validvalues [coveragesForm]="ratesForm"
+                    (coverageChangeEvent)="comparePolicyCoverages(ratesForm)" [policyCoverages]="this.policyCoverages"
+                    [layout]="this.layout"></app-policycoverage-validvalues>
+            </mat-expansion-panel>
+
+
+            <mat-expansion-panel hideToggle [expanded]="false" id="VehCovPanel" class="bwr-mat-expansion-panel mb-2"
+                *ngFor="let item of vehicleList; let i = index;">
+                <mat-expansion-panel-header id="coveragesOptHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5" *ngIf="!this.applicantNonOwner">{{i + 1}}. {{item.vin}}
+                            {{item.year}} {{item.make}} {{item.model}} - {{item.theCurrencyAmount |
+                            currency:'USD':'symbol-narrow':'0.2-2'}}</h5>
+                        <h5 class="bw-header5" *ngIf="this.applicantNonOwner">{{boardFormOrNNO}}</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Vehicle Coverages Component-->
+                <app-vehiclecoverage-validvalues [item]="item" [covIndex]="i"
+                    (coverageChangeEvent)="compareVehicleCoverages(ratesForm)"
+                    [coveragesForm]="this.vehiclesFormGroup(i)" [vehicleList]="vehicleList"
+                    [vehicleCoverages]="this.vehicleCoverages" [layout]="this.layout" [page]="this.page">
+                </app-vehiclecoverage-validvalues>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <button mat-raised-button id="back" class="btn btn-primary btn-next float-left" (click)="onClickBack(ratesForm)">
+            <span>
+                < Back</span>
+        </button>
+
+        <button mat-raised-button id="nextButton" #next class="btn btn-primary btn-next float-right" (click)="onSubmit(ratesForm)">
+            <span>Next ></span>
+        </button>
+    </form>
+</div>

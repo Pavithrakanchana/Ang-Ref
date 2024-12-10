@@ -1,0 +1,549 @@
+<div class="applicant-content" id="topcontent">
+    <h2 class="bw-header3 applicant">Applicant</h2>
+    <div class="d-flex justify-content-center" *ngIf="showSpinner">
+        <div class="spinner-border" role="status">
+            <span class="sr-only" id="loading"></span>
+        </div>
+    </div>
+    <!-- App Errors -->
+    <app-messages>{{ errorMessage }}</app-messages>
+
+    <div class="alert alert-primary d-flex align-items-center" role="alert" *ngIf="infoMessage">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+            <use xlink:href="#info-fill" />
+        </svg>
+        <div class="pl-2">{{ infoMessage }}</div>
+    </div>
+    <form class="applicant-form" [formGroup]="applicantForm">
+        <mat-accordion [multi]="true">
+            <mat-expansion-panel hideToggle [expanded]="true" id="policyPanel" class="bwr-mat-expansion-panel">
+                <mat-expansion-panel-header id="policyHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5 applicant">Policy Details</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row">
+                    <div class="col col-md-3 col-sm-4 col-xs-6">
+                        <div class="row">
+                            <div class="col col-md-10 col-sm-10 col-xs-10">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <!-- Effective Date-->
+                                    <mat-label>Policy Effective Date</mat-label>
+                                    <input matInput appDateformatter [matDatepicker]="pickerEffDt" [min]="minDate"
+                                        id="polEffDt" timezone="America/New_York" formControlName="polEffDt"
+                                        (dateChange)="onPolEffDtChange()">
+                                    <mat-datepicker #pickerEffDt></mat-datepicker>
+                                    <mat-datepicker-toggle matSuffix [for]="pickerEffDt"></mat-datepicker-toggle>
+                                    <mat-error class=" " id="polEffDtReq"
+                                        *ngIf="!applicantForm.controls.polEffDt?.valid">
+                                        Policy Effective Date is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-md-2 col-2 pl-0 pt-1">
+                                <img class="logo piggy-icon" src="assets/img/piggy.svg" id="effDateHelp" alt="piggy"
+                                    (click)="loadHelpText('97')" />
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="col col-sm-4 col-xs-6"
+                        [ngClass]="{'col-md-3': this.checkUndefined(applicantForm.controls) || this.termEligible === '12' , 'col-md-2': this.checkUndefined(applicantForm.controls) && this.termEligible !== '12'}">
+                        <mat-label class="">Term</mat-label>
+                        <div class="mt-2">
+                            <mat-radio-group class="w-100 mandatory-field" id="policyTerm" aria-label="Select an option"
+                                formControlName="policyTerm">
+                                <mat-radio-button class="mr-2 click-area" id="sixMonths" value="6">6 Months
+                                </mat-radio-button>
+                                <mat-radio-button
+                                    *ngIf="applicantForm.controls.term?.value ==='12' || this.termEligible === '12'"
+                                    class="click-area" id="twelveMonths" value="12">12 Months</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6">
+                        <section class="checkbox-section" *ngIf = "!this.broadFormPolicy">
+                            <mat-checkbox class="checkbox-margin" name="nonowner" id="nonowner"
+                                formControlName="nonowner">Is this a
+                                Non Owner Policy?
+                            </mat-checkbox>
+                        </section>
+                        <section class="checkbox-section" *ngIf = "this.broadFormPolicy">
+                            <mat-checkbox class="checkbox-margin" name="nonowner" id="nonowner"
+                                formControlName="nonowner">Is this a Broad Form Policy?
+                            </mat-checkbox>
+                        </section>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6" *ngIf="this.callID || applicantForm.controls.callID?.value">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Call ID</mat-label>
+                            <input matInput placeholder="Call ID" maxlength="250" value="" id="callID"
+                                formControlName="callID">
+                            <mat-error class=" " id="callIDReq" *ngIf="hasError('callID', 'required')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>Call ID is required </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+            <!-- Policyholder section -->
+            <mat-expansion-panel class="bwr-mat-expansion-panel" hideToggle [expanded]="true" id="policyholderPanel">
+                <mat-expansion-panel-header id="policyholderHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5 applicant">Policyholder</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- First Name-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>First Name</mat-label>
+                                    <input matInput placeholder="First Name" maxlength="15" value="" id="firstname"
+                                        formControlName="firstname" (blur)="trimSpace('firstname')" (change)="onPNIchange()">
+                                    <mat-error class="" id="firstnameReq" *ngIf="hasError('firstname', 'required')">
+                                        First Name is required
+                                    </mat-error>
+                                    <mat-error class="" id="firstnamePat" *ngIf="hasError('firstname', 'pattern')">
+                                        Enter valid First Name
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-5">
+                                <mat-form-field class="field-full-width" appearance="outline">
+                                    <mat-label>Middle Initial </mat-label>
+                                    <input matInput placeholder="Middle In" maxlength="1" pattern="[A-z]" value=""
+                                        id="middlename" (blur)="trimSpace('middlename')" formControlName="middlename" (change)="onPNIchange()">
+                                    <mat-error class="" id="middlenamePat" *ngIf="hasError('middlename', 'pattern')">
+                                        Enter valid MI
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Last Name</mat-label>
+                            <input matInput placeholder="Last Name" maxlength="20" value="" id="lastname"
+                                formControlName="lastname" (blur)="trimSpace('lastname')" (change)="onPNIchange()">
+                            <mat-error class=" " id="lastnameReq" *ngIf="hasError('lastname', 'required')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Last Name is required </mat-error>
+                            <mat-error class="" id="lastnamePat" *ngIf="hasError('lastname', 'pattern')">
+                                Enter valid Last Name
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width bwr-dropdown" appearance="outline">
+                            <mat-label>Suffix</mat-label>
+                            <mat-select placeholder="Suffix" id="suffix" formControlName="suffix"
+                                (selectionChange)="onPNIchange()">
+                                <mat-option *ngFor="let sufVal of applicant.suffixValues" [value]="sufVal.key">
+                                    {{sufVal.displayvalue}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error class=" " id="suffixReq" *ngIf="hasError('suffix', 'required')">
+                                Suffix is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <!-- Date Of Birth-->
+                            <mat-label>Date of Birth</mat-label>
+                            <input matInput appDateformatter [matDatepicker]="pickerbirth" [min]="minDate"
+                                [max]="todayDate" id="birthdate" formControlName="birthdate" (change)="onPNIchange()"
+                                maxlength="10" [readonly]="isMVRDOBChanged">
+                            <mat-datepicker-toggle matSuffix [for]="pickerbirth"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerbirth [disabled]="isMVRDOBChanged"></mat-datepicker>
+
+                            <mat-error class=" " id="birthdateReq" *ngIf="!applicantForm.controls.birthdate?.valid">
+                                Date of Birth is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                            <mat-label>Gender</mat-label>
+                            <mat-select class="mandatory-field" placeholder="Gender" id="gender"
+                                formControlName="gender">
+                                <mat-option value="">Please Select</mat-option>
+                                <mat-option *ngFor="let genderVal of applicant.genderValues" [value]="genderVal.key">
+                                    {{genderVal.displayvalue}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error class="mb-3" id="genderReq" *ngIf="hasError('gender', 'required')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Gender is required</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-10 col-10">
+                                <mat-form-field class="field-full-width bwr-dropdown mandatory-field"
+                                    appearance="outline">
+                                    <mat-label>Marital Status</mat-label>
+                                    <mat-select placeholder="Marital Status" id="maritalStatus"
+                                        formControlName="maritalStatus">
+                                        <mat-option value="">Please Select</mat-option>
+                                        <mat-option *ngFor="let martStatVal of applicant.maritalStatusValues"
+                                            [value]="martStatVal.key">
+                                            {{martStatVal.displayvalue}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error class=" " id="maritalStatusReq"
+                                        *ngIf="hasError('maritalStatus', 'required')"><em
+                                            class="fas fa-exclamation-triangle pr-1"></em>Marital Status is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-2 col-2 pl-0">
+                                <mat-icon class="info-icon" aria-label="icon" id="maritalStatusHelp" matTooltip=""
+                                    aria-label="Button that displays a tooltip when focused or hovered over"
+                                    matTooltipClass="bwr-tooltip" (click)="loadHelpText('8')">info</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-10 col-10">
+                                <mat-form-field class="field-full-width" appearance="outline">
+                                    <mat-label>SSN</mat-label>
+                                    <input matInput placeholder="xxx-xx-xxxx" formControlName="ssn" minlength="11" maxlength="11" value=""
+                                        id="ssn" appSsnMask [preValue]="applicantForm.value.ssn" [ssnControl]="applicantForm.controls['ssn']" (change)="onPNIchange()">
+
+                                    <mat-error class=" " id="ssnValid"
+                                        *ngIf="applicantForm.controls.ssn.invalid && (applicantForm.controls.ssn.dirty || applicantForm.controls.ssn.touched)">
+                                        Please provide a valid Social Security Number (SSN)
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-2 col-2 pl-0">
+                                <mat-icon class="info-icon" id="ssnHelp" aria-label="icon" matTooltip=""
+                                    aria-label="Button that displays a tooltip when focused or hovered over"
+                                    matTooltipClass="bwr-tooltip" (click)="loadHelpText('104')">info</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width" appearance="outline">
+                            <mat-label>Phone</mat-label>
+                            <input matInput placeholder="xxx-xxx-xxxx" value="" minlength="12" maxlength="12" id="phone"
+                            [preValue]="applicantForm.value.phone" [phoneControl]="applicantForm.controls['phone']" formControlName="phone" appPhoneFormat>
+                            <mat-error class=" " id="phoneValid"
+                                *ngIf="applicantForm.controls.phone.invalid && (applicantForm.controls.phone.dirty || applicantForm.controls.phone.touched)">
+                                Phone is not valid
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-10 col-10">
+                                <mat-form-field class="field-full-width" appearance="outline">
+                                    <mat-label>Email Address</mat-label>
+                                    <input matInput (blur)="trimSpace('email')" placeholder="Email Address" value="" id="email"
+                                        formControlName="email">
+                                    <mat-error class=" " id="emailPat" *ngIf="hasError('email', 'pattern')"><em
+                                            class="fas fa-exclamation-triangle pr-1"></em> A valid e-mail address must
+                                        be entered. Valid e-mail addresses must contain an at symbol (@) and at least
+                                        one period (.) Example: yourname@aol.com
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-2 col-2 pl-0">
+                                <mat-icon class="info-icon" aria-label="icon" id="emailHelp" matTooltip=""
+                                    aria-label="Button that displays a tooltip when focused or hovered over"
+                                    matTooltipClass="bwr-tooltip" (click)="loadHelpText('86')">info</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+            <!-- Mailing Adddress section -->
+            <mat-expansion-panel class="bwr-mat-expansion-panel" id="mailingPanel" hideToggle [expanded]="true">
+                <mat-expansion-panel-header id="mailingHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5 applicant">Mailing Address </h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Address-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field " appearance="outline">
+                            <mat-label>Address</mat-label>
+                            <input matInput placeholder="Address" maxlength="30" value="" id="address"
+                                formControlName="address" (change)="onPNIchange()">
+                            <mat-error class=" " id="addressReq" *ngIf="hasError('address', 'required')">
+                                Address is required
+                            </mat-error>
+                            <mat-error class=" " id="addressPat" *ngIf="hasError('address', 'pattern')">
+                                Enter valid Address
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>City</mat-label>
+                            <input matInput placeholder="city" value="" maxlength="28" id="city" formControlName="city">
+                            <mat-error class=" " id="cityReq" *ngIf="hasError('city', 'required')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>City is required </mat-error>
+                            <mat-error class="" id="cityValid" *ngIf="hasError('city', 'pattern')">
+                                Enter valid City
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <mat-form-field class="field-full-width bwr-dropdown mandatory-field "
+                                    appearance="outline">
+                                    <mat-label>State</mat-label>
+                                    <mat-select placeholder="State" id="state" formControlName="state"
+                                        (selectionChange)="checkForValidZipCode('currentMailAddress')">
+                                        <mat-option value="">Select</mat-option>
+                                        <mat-option *ngFor="let stateVal of applicant.stateValues"
+                                            [value]="stateVal.key">
+                                            {{stateVal.displayvalue}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error class="" id="stateReq" *ngIf="!applicantForm.controls.state?.valid">
+                                        State is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-7 col-sm-12 col-xs-12">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>ZIP Code</mat-label>
+                                    <input matInput placeholder="xxxxx-xxxx" value="" id="zipcode" minlength="5"
+                                        maxlength="10" formControlName="zipcode" appZipcodeFormat
+                                        (change)="onPNIchange()" (blur)="checkForValidZipCode('currentMailAddress')">
+                                    <mat-error class=" " id="zipcodeReq" *ngIf="hasError('zipcode', 'required')"><em
+                                            class="fas fa-exclamation-triangle pr-1"></em>Valid Zip Code is required
+                                    </mat-error>
+                                    <mat-error class=" " id="zipcodeValid"
+                                        *ngIf="!hasError('zipcode', 'required') && applicantForm.controls.zipcode.invalid && (applicantForm.controls.zipcode.dirty || applicantForm.controls.zipcode.touched)">
+                                        Valid Zip Code is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-checkbox class="" id="pobox" color="primary" name="pobox" formControlName="pobox"
+                            (change)="onPoboxChange('pobox')">P.O. Box</mat-checkbox>
+                    </div>
+                    <div class="col-md-6">
+                        <mat-checkbox class="checkbox-margin" name='moved' id="moved" formControlName="moved"
+                            (change)="checkForValidZipCode('previousMailAddress')">Click Here
+                            If the Insured Has Moved in the Last 6 Months
+                        </mat-checkbox>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <!-- Previous Adddress section -->
+            <mat-expansion-panel class="bwr-mat-expansion-panel" id="prevAddressPanel" *ngIf="launchPrevMailAddress()"
+                hideToggle [expanded]="true">
+                <mat-expansion-panel-header id="prevAddressHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5 applicant">Previous Mailing Address</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Address-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>Address</mat-label>
+                            <input matInput placeholder="prevAddress" maxlength="30" value="" id="prevAddress"
+                                formControlName="prevAddress">
+                            <mat-error class=" " id="prevAddressReq" *ngIf="hasError('prevAddress', 'required')">
+                                Address is required
+                            </mat-error>
+                            <mat-error class=" " id="prevAddressPat" *ngIf="hasError('prevAddress', 'pattern')">
+                                Enter valid Address
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                            <mat-label>City</mat-label>
+                            <input matInput placeholder="prevCity" maxlength="28" value="" id="prevCity"
+                                formControlName="prevCity">
+                            <mat-error id="prevCityReq" *ngIf="hasError('prevCity', 'required')"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>City is required </mat-error>
+                            <mat-error class="" id="prevCityPat" *ngIf="hasError('prevCity', 'pattern')">
+                                Enter valid City
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <mat-form-field class="field-full-width bwr-dropdown mandatory-field "
+                                    appearance="outline">
+                                    <mat-label>State</mat-label>
+                                    <mat-select placeholder="prevState" id="prevState" formControlName="prevState"
+                                        (selectionChange)="checkForValidZipCode('previousMailAddress')">
+                                        <mat-option value="">Select</mat-option>
+                                        <mat-option *ngFor="let stateVal of applicant.prevStateValues"
+                                            [value]="stateVal.key">
+                                            {{stateVal.displayvalue}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error class="" id="prevStateReq"
+                                        *ngIf="!applicantForm.controls.prevState?.valid">
+                                        State is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-7 col-sm-12 col-xs-12">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>ZIP Code</mat-label>
+                                    <input matInput placeholder="xxxxx-xxxx" value="" id="prevZipcode" minlength="5"
+                                        maxlength="10" formControlName="prevZipcode" appZipcodeFormat
+                                        (blur)="checkForValidZipCode('previousMailAddress')">
+                                    <mat-error class=" " id="prevZipcodeReq"
+                                        *ngIf="hasError('prevZipcode', 'required')"><em
+                                            class="fas fa-exclamation-triangle pr-1"></em>Valid Zip Code is required
+                                    </mat-error>
+                                    <mat-error class="" id="prevZipcodeValid"
+                                        *ngIf="!hasError('prevZipcode', 'required') && applicantForm.controls.prevZipcode.invalid && (applicantForm.controls.prevZipcode.dirty || applicantForm.controls.prevZipcode.touched)">
+                                        Valid Zip Code is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-checkbox class="" color="primary" id="prevAddressPO" name="pobox"
+                            formControlName="prevAddressPO" (change)="onPoboxChange('prevAddressPO')">P.O. Box
+                        </mat-checkbox>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <!-- Customer Consent -->
+            <mat-expansion-panel class="bwr-mat-expansion-panel" id="consentPanel" hideToggle [expanded]="true"
+                *ngIf="consentObj">
+                <mat-expansion-panel-header id="consentHeaderPanel">
+                    <mat-panel-title>
+                        <h5 class="bw-header5 applicant">Customer Consent</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="row">
+                    <div class="col-md-10">
+                        <p class="p-grey" id="consent">
+                            {{ this.consentText }}
+                        </p>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="field-full-width bwr-dropdown mandatory-field " appearance="outline">
+                            <mat-label>Consent</mat-label>
+                            <mat-select [disabled]="isConsentDisabled" placeholder="Consent" id="consent"
+                                formControlName="custConsent">
+                                <mat-option value="">Please Select</mat-option>
+                                <mat-option *ngFor="let consentVal of applicant.custConstentValue"
+                                    [value]="consentVal.key">
+                                    {{consentVal.displayvalue}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error class="" id="custConsentReq" *ngIf="!applicantForm.controls.custConsent?.valid">
+                                Customer Consent is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+            </mat-expansion-panel>
+            <!-- Credit Report Disclosure -->
+            <mat-expansion-panel class="bwr-mat-expansion-panel" id="creditReportPanel" hideToggle [expanded]="true">
+                <mat-expansion-panel-header id="creditReportHeaderPanel">
+                    <mat-panel-title>
+                        <h5 *ngIf="this.underWritingBool" class="bw-header5 applicant">Underwriting Reports Disclosure</h5>
+                        <h5 *ngIf="!this.underWritingBool" class="bw-header5 applicant">Credit and Underwriting Reports Disclosure</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+            <div *ngIf="!this.underWritingBool">
+                <div class="content-head">Please read all to the applicant verbatim:</div>
+                <p class="p-grey" id="creditP1">
+                    "In connection with this application for insurance, Bristol West may review 
+                    your credit report or obtain or use a credit-based insurance score based on 
+                    the information contained in that credit report. We may use a third party in 
+                    connection with the development of your insurance scores based on data from 
+                    traditional credit bureaus and the National Consumer Telecom & Utilities  Exchange 
+                    database. </p>
+
+                <p id="creditP2">It is a requirement of this program to allow Bristol West to access 
+                    available driving score(s) from a third party based on vehicle telematics data such 
+                    as hard braking, acceleration, and speed.  This information only available if you 
+                    consented to share vehicle telematics when you obtained your vehicle. We may use this
+                     driving score and/or driving data for the rating and underwriting of your auto policy 
+                     and any renewals.  This information may be shared with third parties as permitted. 
+                     Do you consent for Bristol West entities to access any available driving scores from 
+                     a third party based on vehicle telematics data?"</p>
+
+                     <div class="content-head">By selecting “Next” you acknowledge that:</div>
+                     <p id="creditp3">
+                    (1) You provided the above disclosure to the applicant(s) and notified them, that Farmers 
+                    and its affiliates consider their credit information in the underwriting and rating of their 
+                    policy; and<br>
+                    (2) You received an affirmative response to the request for consent to access available 
+                    driving scores from a third party based on telematics data.</p>
+            </div>
+            <div *ngIf="this.underWritingBool">
+                <div class="content-head">Please read all to the applicant verbatim:</div>
+                <p class="p-grey" id="creditP1">
+                    “In connection with this application for insurance, Bristol West may use a 
+                    financial responsibility-based insurance score. We may use a third party 
+                    in connection with the development of your insurance score based on data 
+                    from traditional consumer reporting companies and the National Consumer 
+                    Telecom & Utilities Exchange database.</p>
+
+                <p id="creditP2">It is a requirement of this program to allow Bristol West to access available 
+                    driving score(s) from a third party based on vehicle telematics data such as hard braking, 
+                    acceleration, and speed. This information is only available if you consented to share vehicle 
+                    telematics when you obtained your vehicle. We may use this driving score and/or driving data 
+                    for the rating and underwriting of your auto policy. This information may be shared with 
+                    third parties as permitted. Do you provide consent for Bristol West entities to access any 
+                    available driving scores from a third party based on vehicle telematics data?”</p>
+
+                     <div class="content-head">By selecting “Next” you acknowledge that:</div>
+                     <p id="creditp3">
+                        (1) You provided the above disclosure to the applicant(s) and notified them, 
+                        that Farmers and its affiliates consider their financial responsibility 
+                        information in the underwriting of their policy; and<br>
+                        (2) You received an affirmative response to the request for consent to access 
+                        available driving scores from a third party based on telematics data.</p>
+            </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <button mat-raised-button id="next" #next class="mt-3 btn btn-primary btn-next float-right"
+            (click)="onSubmit(applicantForm)">
+            <span>Next ></span>
+        </button>
+    </form>
+</div>

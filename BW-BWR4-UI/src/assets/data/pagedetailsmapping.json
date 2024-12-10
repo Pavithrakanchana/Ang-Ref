@@ -1,0 +1,61 @@
+{
+	"PageDetailsConfig": {
+		"pageConfig": [
+			{
+				"id": "APL",
+				"name": "Applicant",
+				"number": "1"
+			},
+			{
+				"id": "DRV",
+				"name": "Drivers",
+				"number": "2"
+			},
+			{
+				"id": "VIO",
+				"name": "Violations",
+				"number": "3"
+			},
+			{
+				"id": "VEH",
+				"name": "Vehicles",
+				"number": "4"
+			},
+			{
+				"id": "COV",
+				"name": "Coverages",
+				"number": "5"
+			},
+			{
+				"id": "PLI",
+				"name": "Policy Info",
+				"number": "6"
+			},
+			{
+				"id": "RTS",
+				"name": "Rate",
+				"number": "7"
+			},
+			{
+				"id": "RPT",
+				"name": "Reports",
+				"number": "8"
+			},
+			{
+				"id": "APP",
+				"name": "Application",
+				"number": "9"
+			},
+			{
+				"id": "REW",
+				"name": "Review",
+				"number": "10"
+			},
+			{
+				"id": "CNF",
+				"name": "Confirmation",
+				"number": "11"
+			}
+		]
+	}
+}

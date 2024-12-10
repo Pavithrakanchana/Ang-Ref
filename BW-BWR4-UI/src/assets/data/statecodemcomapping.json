@@ -1,0 +1,95 @@
+{
+	"StateMCOConfig": {
+		"stateConfig": [
+			{
+				"state": "AZ",
+				"MCO": "28",
+				"Channel": "EA"
+			},
+      {
+				"state": "AZ",
+				"MCO": "28",
+				"Channel": "IA"
+			},
+			{
+				"state": "IL",
+				"MCO": "28",
+				"Channel": "EA"
+			},
+      {
+				"state": "IL",
+				"MCO": "28",
+				"Channel": "IA"
+			},
+			{
+				"state": "IN",
+				"MCO": "33",
+				"Channel": "EA"
+			},
+      {
+				"state": "IN",
+				"MCO": "33",
+				"Channel": "IA"
+			},{
+				"state": "FL",
+				"MCO": "30",
+				"Channel": "EA"
+			},
+      {
+				"state": "FL",
+				"MCO": "30",
+				"Channel": "IA"
+			},
+      {
+				"state": "CO",
+				"MCO": "28",
+				"Channel": "EA"
+			},
+      {
+				"state": "CO",
+				"MCO": "28",
+				"Channel": "IA"
+			},
+			{
+				"state": "TX",
+				"MCO": "43",
+				"Channel": "EA"
+			},
+      		{
+				"state": "TX",
+				"MCO": "43",
+				"Channel": "IA"
+			},
+			{
+				"state": "OH",
+				"MCO": "34",
+				"Channel": "EA"
+			},
+      		{
+				"state": "OH",
+				"MCO": "34",
+				"Channel": "IA"
+			},
+			{
+				"state": "VA",
+				"MCO": "33",
+				"Channel": "IA"
+			},
+			{
+				"state": "VA",
+				"MCO": "33",
+				"Channel": "EA"
+			},
+			{
+				"state": "PA",
+				"MCO": "29",
+				"Channel": "IA"
+			},
+			{
+				"state": "PA",
+				"MCO": "29",
+				"Channel": "EA"
+			}
+		]
+	}
+}

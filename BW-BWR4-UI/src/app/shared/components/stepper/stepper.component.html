@@ -1,0 +1,6 @@
+<ul class="progress-bar-number pb-4" [class.disabled]="this.disableStepper">
+   <li *ngFor="let stepVal of totalStepper; let i = index"
+      [ngClass]="{'active': i == this.step , 'activated': totalStepper[i].activated}">
+      <span (click)="stepperMethod(i, stepVal.link)" [class.disabled]="this.disableStepper">{{stepVal.label}}</span>
+   </li>
+</ul>

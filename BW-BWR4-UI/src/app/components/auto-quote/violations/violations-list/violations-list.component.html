@@ -1,0 +1,228 @@
+<form class="applicant-form" [formGroup]="violationsForm" id="violationListForm">
+    <div>
+        <mat-accordion [multi]="true">
+            <div *ngFor="let driver of displayViolationObj; let i = index" class="container-list"  formArrayName="addViolation">
+            <mat-expansion-panel hideToggle [expanded]="true" id="violationPanel{{i}}"
+                class="bwr-mat-expansion-panel">
+                <mat-expansion-panel-header id="violationHeaderPanel{{i}}">
+                    <mat-panel-title>
+                        <h5 class="bw-header5">{{i+1}}. {{ driver.firstName }} {{ driver.lastName }}</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!-- Violation Driver Info -->
+                <div [formGroupName]="i" class="violation-rows">
+                <div class="row vio-driver-info" *ngIf="showInputs">
+                    <div class="col col-md-2">
+                        <mat-form-field class="field-full-width " appearance="outline">
+                            <mat-label>First Name</mat-label>
+                            <input matInput placeholder="First Name" maxlength="20" value="{{ driver.firstName }}" id="firstName{{i}}" readonly>
+                        </mat-form-field>
+                    </div>
+                    <div class="col col-md-2">
+                        <mat-form-field class="field-full-width " appearance="outline">
+                            <mat-label>Last Name</mat-label>
+                            <input matInput placeholder="Last Name" maxlength="20" value="{{ driver.lastName }}" id="lastName{{i}}" readonly>
+                        </mat-form-field>
+                        </div>
+                    <div class="col col-md-3">
+                        <mat-form-field class="field-full-width" appearance="outline">
+                            <mat-label>Date of Birth</mat-label>
+                            <input matInput placeholder="DOB" appDateformatter id="pickerDOB{{i}}"
+                            timezone="America/New_York" readonly value="{{ driver?.birthDate }}" formControlName="dob">
+                            <mat-datepicker #pickerDOB></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col col-md-3"  *ngIf="licenseStateStatus[i]">
+                        <mat-form-field class="field-full-width" appearance="outline">
+                            <mat-label> Drivers License/ID#</mat-label>
+                            <input matInput placeholder="Drivers License/ID#" maxlength="19"  id="occurenceDate{{i}}"
+                            maxlength="19" value="{{ driver?.license?.licenseNumber }}" id="driverLicense{{i}}" (blur)="onLicenseChange(i)"  formControlName="licenseNumber">
+                            <mat-error class="" id="licensenumberReq{{i}}"
+                            *ngIf="driverFormHasError('licenseNumber', 'required', i)">
+                            Drivers License/ID# is required
+                         </mat-error>
+                            <mat-error class="" id="licensenumberPat{{i}}"
+                            *ngIf="driverFormHasError('licenseNumber', 'pattern', i)">
+                            Enter valid Drivers License/ID#
+                         </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col col-md-2" *ngIf="licenseStateStatus[i]">
+                        <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                           <mat-label>License State</mat-label>
+                           <mat-select class="" placeholder="State" formControlName="licensestate"
+                              id="licensestate{{i}}">
+                              <mat-option value="">Please Select</mat-option>
+                              <mat-option *ngFor="let licStateVal of licenseStateValues"
+                                 [value]="licStateVal.key">
+                                 {{licStateVal.displayvalue}}
+                              </mat-option>
+                           </mat-select>
+                           <mat-error class="" id="licensestateReq{{i}}"
+                           *ngIf="driverFormHasError('licensestate', 'required', i)">
+                           License State is required
+                        </mat-error>
+                        </mat-form-field>
+                     </div>
+                </div>
+
+                    <div class="">
+                        <div class="table-div">
+                        <div class="row row-header mb-2" *ngIf="driver.violations.length > 0">
+                            <div class="col col-3 col-lg-2">Accident/Violation</div>
+                            <div class="col col-2 col-lg-2" *ngIf ="isRequiredConvictionDate">Conviction Date</div>
+                            <div class="col col-2 col-lg-2" *ngIf ="!isRequiredConvictionDate">Occurrence Date</div>
+                            <div class="col col-1 col-lg-1">Source</div>
+                            <div class="col col-1 col-lg-1">
+                                <div class="row">
+                                    <div class="col col-6"><label>Dispute
+                                    </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-2 col-lg-3"></div>
+                        </div>
+                        <div formArrayName="listOfViolations">
+                            <div class="row row-body" *ngFor="let violation of driver.violations ; let v = index"
+                                [formGroupName]="v"
+                                [ngClass]="{'display-none': this.checkForUndefined(listOfViolationsFormGroup(i, v),'delete')}">
+                                <div class="col col-3 col-lg-2">{{violation.violationName}}</div>
+                                <div class="col col-2 col-lg-2" *ngIf ="isRequiredConvictionDate">{{violation.convictionDate | date : 'MM/dd/yyyy'}}</div>
+                                <div class="col col-2 col-lg-2" *ngIf ="!isRequiredConvictionDate">{{violation.violationDate | date : 'MM/dd/yyyy'}}</div>
+                                <div class="col col-1 col-lg-1">{{violation.reportingSource}}</div>
+                                <div class="col col-1 col-lg-1">
+                                    <mat-checkbox class="checkbox-margin" id="dispute{{i}}{{v}}"
+                                    formControlName="dispute" [checked]="this.checkForUndefined(listOfViolationsFormGroup(i, v),'checked')" value="listOfViolationsFormGroup(i, v)?.controls?.dispute?.value" *ngIf="(violation?.reportingSource === 'CLUE' || violation?.reportingSource === 'MVR') && (violation?.violationCode !== 'UDR') && (violation?.displayingDisputeIndicator || violation?.disputeLevel >= 2)"
+                                    (change)="onDisputeClick($event, i, v)"></mat-checkbox>
+                                </div>
+                                <div class="col col-3 col-lg-3">
+                                    <mat-form-field
+                                    *ngIf="(violation?.reportingSource === 'CLUE' || violation?.reportingSource === 'MVR') && (violation?.violationCode !== 'NAF' &&  violation?.violationCode !== 'OCG' && violation?.violationCode !== 'OCL') && addViolationStatusByDriver[i]?.violations[v]?.status"
+                                    class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>Select Explanation</mat-label>
+                                    <mat-select placeholder="Select Explanation" id="explanation{{i}}{{v}}" matInput
+                                        formControlName="explanation"  (selectionChange)="onExplanationchange($event, i, v)">
+                                        <mat-option value="">Please Select</mat-option>
+                                        <mat-option *ngFor="let explanation of explanations"
+                                            [value]="explanation.key">
+                                            {{explanation.displayvalue}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error class=" " id="explanationReq"
+                                        *ngIf="hasError('explanation', 'required',i,v)">
+                                        Explanation is required
+                                    </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field
+                                    *ngIf="(violation?.reportingSource === 'CLUE' || violation?.reportingSource === 'MVR') &&  (violation?.violationCode === 'NAF' ||  violation?.violationCode === 'OCG' || violation?.violationCode === 'OCL') &&  addViolationStatusByDriver[i]?.violations[v]?.status"
+                                    class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>Select Explanation</mat-label>
+                                    <mat-select placeholder="Select Explanation" formControlName="explanation"
+                                        id="explanation{{i}}{{v}}" matInput>
+                                        <mat-option value="">Please Select</mat-option>
+                                        <mat-option value="NM">Not Mine</mat-option>
+                                        <mat-option value="DP">Duplicate</mat-option>
+                                    </mat-select>
+                                    <mat-error class=" " id="explanationReq"
+                                        *ngIf="hasError('explanation', 'required',i,v)">
+                                        Explanation is required
+                                    </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col col-2 col-lg-3">
+                                    <div class="row" *ngIf="violation.editableIndicator">
+                                    <div class="col-6 col-lg-4"><button mat-icon-button id="editViolation{{i}}{{v}}"
+                                            class="icon-button" (click)="editDriverViolation(i, v)">
+                                            <mat-icon>mode</mat-icon> Edit
+                                        </button></div>
+                                    <div class="col-6 col-lg-4"><button mat-icon-button
+                                            id="deleteViolation{{i}}{{v}}" class="icon-button"
+                                            (click)="removeDriverViolation(i, v)">
+                                            <mat-icon>delete</mat-icon> Delete
+                                        </button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+                        <div class="row" *ngIf="!driver.violations">
+                        <div class="col-md-9">
+                            <div class="row">No Violation Detected</div>
+                        </div>
+                        </div>
+                        <hr class="mb-3">
+                        <input formControlName="operation" class="display-none">
+                        <input formControlName="source" class="display-none">
+                        <div class="add-violation-form" *ngIf="addViolationStatusByDriver[i]?.status">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <mat-label>Accident/Violation</mat-label>
+                                    <mat-select placeholder="Code" formControlName="violationCode"
+                                    id="violationCode{{i}}">
+                                    <mat-option value="">Select</mat-option>
+                                    <mat-option *ngFor="let code of violationCodes" [value]="code.key">
+                                        {{code.displayvalue}}
+                                    </mat-option>
+                                    </mat-select>
+                                    <mat-error class=" ">
+                                    Accident/Violation is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isRequiredConvictionDate">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <!-- Occurence Date-->
+                                    <mat-label>Occurrence Date</mat-label>
+                                    <input matInput appDateformatter [matDatepicker]="occurenceDate" [min]="minDate" [max]="todayDate"
+                                    id="occurenceDate{{i}}" formControlName="occurenceDate">
+                                    <mat-datepicker #occurenceDate></mat-datepicker>
+                                    <mat-datepicker-toggle matSuffix [for]="occurenceDate"></mat-datepicker-toggle>
+                                    <mat-error class=" " *ngIf="this.violationFormGroup(i).controls['occurenceDate']?.errors?.required">
+                                    Occurrence Date is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-4" *ngIf="isRequiredConvictionDate">
+                                <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                    <!-- Conviction Date-->
+                                    <mat-label>Conviction Date</mat-label>
+                                    <input matInput appDateformatter [matDatepicker]="convictionDate" [min]="minDate" [max]="todayDate"
+                                    id="convictionDate{{i}}" formControlName="convictionDate">
+                                    <mat-datepicker #convictionDate></mat-datepicker>
+                                    <mat-datepicker-toggle matSuffix [for]="convictionDate"></mat-datepicker-toggle>
+                                    <mat-error class=" " *ngIf="this.violationFormGroup(i).controls['convictionDate']?.errors?.required">
+                                    Conviction Date is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <button mat-raised-button class="btn btn-primary btn-next" id="add{{i}}"
+                                    *ngIf="eventType === 'add'" (click)="addUpdateViolation(i)">ADD</button>
+                                <button mat-raised-button class="btn btn-primary btn-next" id="save{{i}}"
+                                    *ngIf="eventType !== 'add'" (click)="addUpdateViolation(i)">SAVE</button>
+                                <div mat-raised-button class="btn cancel-btn" id="cancel{{i}}"
+                                    (click)="hideAddViolation(i)">CANCEL</div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row mt-2">
+                        <div mat-raised-button class="add-btn ml-3 mb-3" id="addNew{{i}}"
+                            (click)="viewAddViolation(i, 'add')">
+                            + Add New Accident/Violation
+                        </div>
+                        </div>
+                    </div>
+
+                </div>
+            </mat-expansion-panel>
+            </div>
+        </mat-accordion>
+    </div>
+    <button id="violationNext"  #violationNext class="violation-list-next-btn"></button>
+    </form>

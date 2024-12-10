@@ -1,0 +1,40 @@
+/*
+.p-grey {
+    color: #808080;
+}
+.mat-form-field-appearance-legacy .mat-form-field-underline {
+    height: 0 !important;
+}
+*/
+// /* Dense Fields */
+// .mat-form-field-appearance-outline .mat-form-field-infix {
+//     // padding: 0.85em 0px 0.75em 0px;
+// }
+
+.applicant-content .mat-checkbox {
+  position: inherit;
+  // margin-top: 15px;
+}
+
+.mat-checkbox-label {
+  white-space: break-spaces;
+}
+
+.applicant-content .checkbox-section {
+  margin-bottom: 15px;
+}
+
+.content-head {
+  font-weight: bold;
+}
+
+mat-form-field .mat-form-field {
+  &-underline {
+    position: relative;
+    bottom: auto;
+  }
+
+  &-subscript-wrapper {
+    position: static;
+  }
+}

@@ -1,0 +1,32 @@
+<div mat-dialog-content>
+    <div class="topcontent"></div>
+    
+        <mat-accordion>
+            <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                       Enroll Go Paperless
+                    </mat-panel-title>
+                </mat-expansion-panel-header>   
+        <p>The customer has elected to enroll in Go Paperless.
+           In order to complete the enrollment and registration process 
+           please have the customer register at bristolwest.com.</p>
+        <p style ="text-align:center;font-weight: bold"> Click on the link below to begin registration process</p>
+        <div class="button-style">
+            <button mat-button mat-raised-button  
+                            class="button1">
+                            <a class="registration" href="{{resgisterUrl}}">Bristol West Registration</a>
+                        </button>
+                    </div>
+        <p><span style ="font-weight: bold">Please Note: </span>If this process is not complete within 14 days the customer
+             will be unenrolled from Go Paperless and a Paper Documents Fee may be charged.</p>
+        <div class="button-style">
+            <button mat-button mat-raised-button  (click)="dialogRef.close(false)"
+                            class="button2">
+                            <span> Customer Will Complete Enrollment Later</span>
+                        </button>
+                    </div>
+       </mat-expansion-panel>            
+       </mat-accordion>
+ </div>
+    

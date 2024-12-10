@@ -1,0 +1,175 @@
+<div class="coverages-container" id="topcontent">
+   <h2 class="bw-header3 coverages">Reports</h2>
+   <div class="d-flex justify-content-center" *ngIf="showSpinner">
+      <div class="spinner-border" role="status">
+         <span class="sr-only" id="loading"></span>
+      </div>
+   </div>
+   <!-- App Errors -->
+   <app-messages>{{ errorMessage }}</app-messages>
+   <div class="alert alert-primary d-flex align-items-center" role="alert" *ngIf="infoMessage">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+         <use xlink:href="#info-fill" />
+      </svg>
+       <div class="pl-2">
+       {{ infoMessage }}
+       </div>
+   </div>
+ 
+  <div class="bwr-reports-form">
+     <form [formGroup]="reportsForm">
+        <!-- Violations Component-->
+        <div class="row pt-2">
+          <div class="col col-4">
+           <h2 class="bw-header3 violations">Accidents/Violations</h2>
+        </div>
+        <div class="col col-6 pl-2 pt-2">
+         <p >CLUE Status: <strong class="pl-2" [ngStyle] = "{color:clueStatus === 'Complete' ? '#0073CF' : 'red'}">{{ clueStatus }}</strong>
+           &nbsp;&nbsp;&nbsp; MVR Status: <strong class="pl-2" [ngStyle] = "{color:mvrStatus === 'Complete' ? '#0073CF' : 'red'}">{{ mvrStatus }}</strong></p>
+        </div>
+        <div class="col col-2 col-lg-2">
+               <!-- Order MVR -->
+               <div class="">
+                <button mat-raised-button class="add-btn float-right mb-1" id="recalculateBtn" *ngIf="orderMVRStatus"
+                    (click)="this.clickBack = false;orderMVR(reportsForm, 'reorder')">
+                    Order MVR
+                </button>
+            </div>
+            </div>
+            </div>
+        <app-violations-list *ngIf="this.violationsLoaded"
+        [violationsForm]="reportsForm"
+        [violations]="this.violations"
+        [clueViolations]="this.clueResponseObj"
+        [page]="page"
+        [showInputs]="true" (licenseChangeEvent)="onLicenseChange($event)">
+        </app-violations-list>
+        <mat-accordion [multi]="true">
+           <!-- Home Owner Verification -->
+           <div  *ngFor="let data of underWritingsData ;  index as i">
+           <mat-expansion-panel hideToggle  id="underWritings{{i}}" *ngIf="(data.reportName === 'HOMEOWNER' && primaryResidence) || (data.reportName === 'MULTYPOLICY' && multipolicy)" [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel pay-plan-panel">
+              <mat-expansion-panel-header id="underWritingsHeaderPanel{{i}}">
+                 <mat-panel-title>
+                    <h5 class="bw-header5" >{{verification_codes[data.reportName]}} Verification</h5>
+                    <span class="material-icons open">arrow_drop_down</span>
+                    <span class="material-icons close">arrow_drop_up</span>
+                 </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="col col-3 ml-0 pl-0">
+                 <div class="d-inline-flex pr-5 mb-2">Status: <strong class="pl-2" [ngStyle] = "{color:data.status === 'Yes' ? '#0073CF' : 'red'}">{{data.status === 'Yes' ? 'Complete' : 'Not Run'}}</strong></div>
+                 <span class="d-inline-flex">{{verification_codes[data.reportName]}} Verified: <strong class="pl-2" [ngStyle] = "{color:data.verificationIndicator === 'Yes' ? '#0073CF' : 'red'}">{{data.verificationIndicator}}</strong></span>
+              </div>
+           </mat-expansion-panel>
+          </div>
+ 
+           <!-- Prior Insurance -->
+           <mat-expansion-panel hideToggle [expanded]="true" id="priorPanel" [class.disabled]="checkForBWFarmersAffiliate(priorInsuranceStatus) || checkForDriverStateFiling()" class="bwr-mat-expansion-panel pay-plan-panel" *ngIf="priorInsuranceStatus?.toUpperCase() !== 'NO'">
+              <mat-expansion-panel-header id="priorHeaderPanel">
+                 <mat-panel-title>
+                    <h5 class="bw-header5">Prior Insurance - <span class="d-inline-flex pr-3">Status: <span class="green-color pl-1" *ngIf="underWritingStatus === 'Yes'">Complete</span><span class="red-color pl-1" *ngIf="underWritingStatus?.toUpperCase() === 'NO'">No Hit</span></span></h5>
+                    <span class="material-icons open">arrow_drop_down</span>
+                    <span class="material-icons close">arrow_drop_up</span>
+                 </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="prior-insurance">
+                 <!-- Prior Insurance New -->
+ 
+                 <mat-radio-group [disabled]="checkForBWFarmersAffiliate(priorInsuranceStatus) || checkForDriverStateFiling()" [class.disabled]="checkForBWFarmersAffiliate(priorInsuranceStatus) || checkForDriverStateFiling()" aria-label="Select an option" id="prior-insurance" formControlName="priorInsurance" (change)="onPriorInsuranceChange($event)">
+                   <div class="rates-flex-container">
+                   <div class="container-list" *ngFor="let data of priorCarrierInfoObj ;  index as i" id="priorInsurance{{i}}" [class.unselect-radio]="hasError('priorInsurance', 'required')" [class.selected-insurance]="(data.reportOrigin === 'InsuredProvided' && this.selectedPriorInsurance === 'N' && !checkForDriverStateFiling()) || (data.reportOrigin === 'Vendor' && (this.selectedPriorInsurance === 'Y' || checkForDriverStateFiling()))">
+                     <div class="radio-btn-container">
+                         <mat-radio-button id="priorInsuranceRadBtn{{i}}" (change)='priorInsStatusCheck(i)' value="N" *ngIf="data.reportOrigin === 'InsuredProvided'" class="prior-label">Insured Provided Data</mat-radio-button>
+                         <mat-radio-button id="priorInsuranceRadBtn{{i}}" (change)='priorInsStatusCheck(i)' value="Y" *ngIf="data.reportOrigin === 'Vendor'">Vendor Order Results</mat-radio-button>
+                         <div class="form-group row">
+                            <label for="premium" class="col-sm-9 col-form-label">Six Months Coverage
+                               <strong *ngIf="i == 0">
+                                  <span *ngIf="data.continuousInsuranceVerificationIndicator" class="pl-1 green-color"> <mat-icon>check</mat-icon><span class="pl-4">Verified</span></span>
+                                  <span class="pl-1 red-color" *ngIf="!data.continuousInsuranceVerificationIndicator"><mat-icon>close</mat-icon> <span class="pl-4">Not Verified</span></span>
+                               </strong>
+                            </label>
+                            <div class="col-sm-3">
+                               <input type="text" readonly class="form-control-plaintext" *ngIf="i == 0" id="ip_six_month_coverage{{i}}"
+                                  [attr.value]="data.priorCarrierName.trim().toUpperCase() === 'NO PRIOR' ? 'No Prior' : (data.continuousInsuranceIndicator ? 'Yes' : 'No')">
+                                  <input type="text" readonly class="form-control-plaintext" *ngIf="i == 1" id="ip_six_month_coverage{{i}}"
+                                     [attr.value]="data.continuousInsuranceIndicator ? 'Yes' : 'No'">
+                            </div>
+                         </div>
+                         <div class="form-group row">
+                            <label for="downpayment" class="col-sm-7 col-form-label">Prior Carrier
+                               <strong *ngIf="i == 0">
+                                  <span *ngIf="data.priorCarrierVerificationIndicator" class="pl-1 green-color"><mat-icon>check</mat-icon> <span class="pl-4">Verified</span></span>
+                                  <span class="pl-1 red-color" *ngIf="!data.priorCarrierVerificationIndicator"><mat-icon>close</mat-icon> <span class="pl-4">Not Verified</span> </span>
+                               </strong>
+                            </label>
+                            <div class="col-sm-5">
+                               <input type="text" readonly class="form-control-plaintext" id="ip_prior_carrier{{i}}"
+                                  value="{{data.priorCarrierName}}">
+                            </div>
+                         </div>
+                         <div class="form-group row">
+                            <label for="installment" class="col-sm-7 col-form-label">Prior Policy Limits
+                               <strong *ngIf="i == 0">
+                                  <span *ngIf="data.priorLimitsVerificationIndicator" class="pl-1 green-color"> <mat-icon>check</mat-icon><span class="pl-4">Verified</span></span>
+                                  <span class="pl-1 red-color" *ngIf="!data.priorLimitsVerificationIndicator"> <mat-icon>close</mat-icon><span class="pl-4">Not Verified</span></span>
+                               </strong>
+                            </label>
+                            <div class="col-sm-5">
+                               <input type="text" *ngIf="i == 0" readonly class="form-control-plaintext" id="ip_policy_limits{{i}}"
+                                 [attr.value]="data.priorCarrierName.trim().toUpperCase() === 'NO PRIOR' ? 'No Prior' : data.priorLimits">
+                                  <input type="text" *ngIf="i == 1" readonly class="form-control-plaintext" id="ip_policy_limits{{i}}" value="{{data.priorLimits}}">
+                            </div>
+                         </div>
+                         <div class="form-group row">
+                            <label for="installment" class="col-sm-9 col-form-label">Lapse in Coverage
+                               <strong *ngIf="i == 0">
+                                  <span *ngIf="data.lapseInCoveragesVerificationIndicator" class="pl-1 green-color"> <mat-icon>check</mat-icon><span class="pl-4">Verified</span></span>
+                                  <span class="pl-1 red-color" *ngIf="!data.lapseInCoveragesVerificationIndicator"><mat-icon>close</mat-icon> <span class="pl-4">Not Verified</span></span>
+                               </strong>
+ 
+                            </label>
+                            <div class="col-sm-3">
+                               <input type="text" readonly *ngIf="i == 0" class="form-control-plaintext" id="p_lapse{{i}}" [attr.value]="data.priorCarrierName.trim().toUpperCase() === 'NO PRIOR' ? 'No Prior' :
+                               ((data.priorCarrierName.trim().toUpperCase() === 'BRISTOL WEST' || data.priorCarrierName.trim().toUpperCase() === 'FOREMOST') && (data.priorLimits.trim().toUpperCase() === 'NO PRIOR')) ? 'No Prior' : this.setLapseYesNo(data.policyExpirationDate!) ? 'Yes' : 'No Lapse'">
+                               <input type="text" readonly *ngIf="i == 1" class="form-control-plaintext" id="p_lapse{{i}}"
+                               [attr.value]="data.priorCarrierName.trim().toUpperCase() === 'NO PRIOR' ? 'No Prior': ((data.priorCarrierName.trim().toUpperCase() === 'BRISTOL WEST' || data.priorCarrierName.trim().toUpperCase() === 'FOREMOST') && (data.priorLimits.trim().toUpperCase() === 'NO PRIOR')) ? 'No Prior' : this.setLapseYesNo(data.policyExpirationDate!) ? 'Yes' : 'No Lapse'">
+                            </div>
+                         </div>
+                         <p class="bold" *ngIf="i == 0">Follow Up Requirements - None</p>
+                         <p class="bold" *ngIf="i == 1">Follow Up Requirements -
+                            <span *ngIf="popServiceEdits.length > 0 && !checkForBWFarmersAffiliate(priorInsuranceStatus)">Required</span>
+                            <span *ngIf="popServiceEdits.length == 0 || checkForBWFarmersAffiliate(priorInsuranceStatus)">None</span></p>
+                         <div  *ngIf="data.reportOrigin === 'InsuredProvided' && popServiceEdits.length > 0 && !checkForBWFarmersAffiliate(priorInsuranceStatus)">
+                            <ul>
+                               <li *ngFor="let data of popServiceEdits ;  index as i">{{data.text}}</li>
+                            </ul>
+ 
+                         </div>
+                      </div>
+                      </div>
+ 
+ 
+ 
+                   </div>
+ 
+                </mat-radio-group>
+                <mat-error class="pt-1" id="priorinsuerr" *ngIf="hasError('priorInsurance', 'required')"><em
+                      class="fas fa-exclamation-triangle pr-1"></em>Prior Insurance is required
+                </mat-error>
+                 <!-- Prior Insurance New ends -->
+              </div>
+           </mat-expansion-panel>
+        </mat-accordion>
+        <div class="footer-buttons pt-4 pb-4">
+           <button id="back" #back class="btn btn-primary btn-next float-left" (click)="onClickBack(reportsForm)">
+           <span>
+           &lt; Back</span>
+           </button>
+           <button mat-raised-button id="next" #next class="btn btn-primary btn-next float-right"
+              (click)="this.clickBack = false;onSubmit(reportsForm);">
+           <span>Next &gt;</span>
+           </button>
+        </div>
+     </form>
+  </div>
+</div>
+

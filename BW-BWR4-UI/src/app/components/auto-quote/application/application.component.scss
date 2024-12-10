@@ -1,0 +1,35 @@
+
+.message-text {
+    font-size: 12px;
+    color: #4D4D4D;
+}
+.icon-button {
+    color: #017ED5;
+    margin-top: -8px;
+}
+
+.info-icon {
+   // color: #158FEF;
+    line-height: 2.8;
+    //position: absolute;
+    //left: 200px;
+   // right: 0;
+    }
+   
+.group-option { 
+    color: #000000DE;
+    font-weight: bold;
+}
+
+::ng-deep .mat-optgroup {
+    &.bolded-label-ng-deep .mat-optgroup-label {
+        font-weight: bold;
+        color: #000000DE;
+    }
+}
+
+@media only screen and (max-width: 1026px) {
+    .icon-text {
+    display: none;
+    }
+}

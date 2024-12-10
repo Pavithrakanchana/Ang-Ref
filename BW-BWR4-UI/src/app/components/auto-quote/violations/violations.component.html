@@ -1,0 +1,23 @@
+<div class="violation-container" id="topcontent">
+   <h2 class="bw-header3 violations">Violations</h2>
+  <!-- App Errors -->
+  <app-messages >{{ errorMessage }}</app-messages>
+   <form class="applicant-form" [formGroup]="violationsForm">
+       <app-violations-list *ngIf="this.violationsLoaded"
+           [violationsForm]="violationsForm"  
+           [violations]="this.violations"
+           [clueViolations]="this.clueResponseObj"
+           [showInputs]="false">
+       </app-violations-list>
+       <div class="footer-buttons pt-4 pb-4">
+           <button id="back" class="btn btn-primary btn-next float-left" (click)="onClickBack(violationsForm)">
+              <span>
+                 &lt; Back</span>
+           </button>
+           <button mat-raised-button id="next" #next class="btn btn-primary btn-next float-right"
+              (click)="onSubmit(violationsForm)">
+              <span>Next &gt;</span>
+           </button>
+        </div>
+   </form>
+</div>

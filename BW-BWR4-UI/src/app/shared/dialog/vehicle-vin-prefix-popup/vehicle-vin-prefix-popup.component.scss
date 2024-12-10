@@ -1,0 +1,64 @@
+.vin-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    }
+    
+   // .vin-radio-button {
+   // margin: 5px;
+   // }
+    .mat-error  {
+        font-size: 12px;
+    }
+    // .mat-dialog-content{
+    //     width: 150%
+    // }
+    .spacing{
+        padding-left: 25px;
+    }
+
+    .vinprefix-flex-container {
+        display: flex;
+        height: 100%;
+        width: max-content;
+        box-sizing: border-box;
+        align-items: flex-start;
+    }
+    table {
+        width: 100%;
+      }
+    .mat-header-cell {
+        font-weight: bold;
+        word-wrap: break-word !important;
+        white-space: unset !important;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        -ms-hyphens: auto;
+        -moz-hyphens: auto;
+        -webkit-hyphens: auto;
+        hyphens: auto;
+      }
+      .mat-column-select {
+        flex: 0 0 11% !important;
+        width: 11% !important; 
+      }
+      .mat-column-transmission {
+        flex: 0 0 28% !important;
+        width: 28% !important;        
+        }
+        .mat-column-fuel {
+            flex: 0 0 15% !important;
+            width: 15% !important;
+        }
+        .mat-column-cycle {
+            text-align: center !important;
+            flex: 0 0 15% !important;
+            width: 15% !important;
+        }
+        .mat-column-driver {
+            flex: 0 0 21% !important;
+            width: 21% !important;
+        }
+        .bwr-mat-expansion-panel .mat-expansion-panel-body {
+            padding: 8px 10px 10px 10px;
+        }

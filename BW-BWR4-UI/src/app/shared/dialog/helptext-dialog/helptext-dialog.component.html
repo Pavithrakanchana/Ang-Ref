@@ -1,0 +1,9 @@
+<div class="helptext-header">
+    <button class="close" mat-button aria-label="close dialog" (click)="closeDialog(false)">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h5 mat-dialog-title class="bw-header5">{{ title }}</h5>
+</div>
+<div mat-dialog-content class="helptext-body" [innerHTML]="text">
+    
+</div>

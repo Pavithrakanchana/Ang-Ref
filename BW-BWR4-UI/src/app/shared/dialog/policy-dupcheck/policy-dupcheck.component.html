@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col">
+    <button class="close" mat-button aria-label="close dialog float-right" (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div> 
+</div>
+<div class="pt-1 pb-3 pl-3 pr-3">
+<div >
+  <div>{{dupcheckMessage}}</div>
+</div>
+<div mat-dialog-actions>
+  <div class="row">
+    <div class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <button mat-raised-button id="save" class="mt-3 btn btn-primary btn-next float-left" [mat-dialog-close]="true"
+        cdkFocusInitial> <span>Yes, Continue with Upload</span></button>
+    </div>
+    <div class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <button mat-button mat-raised-button id="cancel" [mat-dialog-close]="false" class="mt-3 btn float-right">
+        <span>No, Return to Quote</span>
+      </button>
+    </div>
+  </div>
+</div>
+</div>

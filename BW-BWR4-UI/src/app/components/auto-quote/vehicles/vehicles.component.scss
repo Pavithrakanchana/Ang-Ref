@@ -1,0 +1,138 @@
+
+.add-vehicle-link {
+    margin-top: 5px;
+    font-size: 14px;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+  }
+
+  .antiTheft-img {
+    margin-top: -3px;
+    margin-left: -8px;
+  }
+  
+::ng-deep .mat-dialog-container {
+  padding: 16px !important;
+}
+  ::ng-deep.full-width-dialog {
+    max-width: 50% !important;
+  }
+  ::ng-deep.vin-prefix-full-width-dialog {
+    max-width: 65% !important;
+  }
+.bwr-vehicle-form {
+  .bwr-mat-expansion-panel .info-icon {
+    line-height: 0.6 !important;
+  }
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin:0px;
+    padding-bottom: 0px !important;
+    }
+    ::ng-deep .mat-form-field-subscript-wrapper {
+    position: relative;
+    }
+    
+    .vehicle-flex-container {
+      display: flex;
+      height: 100%;
+      width: auto;
+      box-sizing: border-box;
+    }  
+    .container-list {
+      // flex-grow: 1;
+      box-sizing: border-box;
+      width: 27%;
+      min-width: 27%;
+    }  
+    .container-list + .container-list {
+      margin-left: 3%;
+    }
+    .delete-btn.mat-icon-button {
+      line-height: 1px;
+      // width: 15px;
+      // height: 15px;
+      // font-size: 12px;
+      // float: right;
+      position: absolute;
+      bottom: 0px;
+      top: -4px;
+      right: 20px;
+      color: #fff;
+      .mat-icon {
+        font-size: 19px;
+      }
+    }
+    /*.add-btn {
+      border: 1px solid #158FEF;
+      color:#158FEF;
+      margin-top: 90%;
+      margin-left: 10%;
+    }*/
+/*----- Vehicle page -----*/
+.add-btn {
+  border: 1px solid #158FEF;
+    color:#158FEF;
+    margin-top: 90%;
+    margin-left: 10%;
+    width: auto;
+    max-width: fit-content;
+    background: #fff;
+    padding: 7px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 1px 2px 4px 2px #cbcbcb;
+}
+  }
+
+
+  /* 
+    ##Device = Most of the Smartphones Mobiles (Portrait)
+    ##Screen = B/w 320px to 479px
+  */
+  
+  @media (min-width: 480px) and (max-width: 1024px) and (orientation: landscape) {
+    .bwr-vehicle-form {
+      .container-list {
+        // flex-grow: 1;
+        box-sizing: border-box;
+        width: 37%;
+        min-width: 37%;
+      }
+      .mat-icon {
+        height: 14px;
+        width: 14px;
+        font-size: 22px;
+      }
+      .delete-btn.mat-icon-button {            
+        top: -10px;
+        .mat-icon {
+          font-size: 19px;
+        }
+      }
+    }
+}
+    @media (min-width: 320px) and (max-width: 480px) {
+      .bwr-vehicle-form {
+          .container-list {
+            // flex-grow: 1;
+            box-sizing: border-box;
+            width: 50%;
+            min-width: 50%;
+          }
+          .mat-icon {
+            height: 14px;
+            width: 14px;
+            font-size: 18px;
+          }
+          .delete-btn.mat-icon-button {            
+            top: -10px;
+            .mat-icon {
+              font-size: 19px;
+            }
+          }
+    }
+  }
+  .disabled-class {
+    color:gray;
+}
+

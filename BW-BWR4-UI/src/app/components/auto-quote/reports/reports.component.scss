@@ -1,0 +1,74 @@
+.prior-insurance {
+    padding-left: 20px;
+    vertical-align: middle;
+    font-size: 13px;
+    padding-bottom: 20px;
+    .mat-error {
+        font-size: 13px;
+    }
+}
+.form-group{
+    .mat-icon {
+        font-size: 17px;
+        font-weight: bold;
+        position: absolute;
+    }
+}
+.green-check {
+    color: lightgreen;
+}
+.bwr-reports-form {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    .rates-flex-container {
+      display: flex;
+      height: 100%;
+      width: auto;
+      box-sizing: border-box;
+    }
+    .container-list {
+      // flex-grow: 1;
+      box-sizing: border-box;
+      width: 42%;
+      min-width: 42%;
+      border: 1px solid #7A7A7A;
+      padding: 14px 3px 0px 14px;
+      border-radius: 5px;
+    }
+    .container-list + .container-list {
+      margin-left: 1%;
+    }
+    .radio-btn-container {
+        .form-group {
+            margin-bottom: 0rem !important;
+            &.row label {
+                font-size: 12px;
+                color: #4D4D4D;
+            }
+        }
+    }
+    .form-control-plaintext {
+        width: 102%;
+        text-align: right;
+        font-size: 12px;
+        font-weight: bold;
+        position: absolute;
+        right: 20px;
+    }
+
+}
+
+::ng-deep .mat-radio-label {
+    margin-bottom: 15px;
+    color: #4D4D4D;
+}
+.selected-insurance {
+    border: 4px solid #003087 !important;
+}
+.unselect-radio {
+    border: 2px solid #f44336 !important;
+}
+
+.center {
+  align-items: center;
+}
+

@@ -1,0 +1,73 @@
+
+.vio-driver-info {
+    width: 100%;
+    display: inline-flex;
+    vertical-align: center;
+    //margin-left: 5px;
+    margin-bottom: 15px;
+
+    div {
+        vertical-align: center;
+    }
+
+    div input {
+        padding-top: 0px;
+    }
+}
+.violation-container {
+    font-size: 14px;
+}
+.violation-rows {
+    .row + .row {
+        margin-bottom: 23px;
+    }
+    .row-header {
+        color: #4D4D4D;
+        font-size: 12px;
+    }
+    .icon-button {
+        color: #017ED5;
+    }
+    .row-body{
+        margin-bottom: 23px;
+        // .col {
+        //     // line-height: 3;
+        // }
+        &:last-child {
+            margin-bottom: 2px !important;            
+        }
+    }
+}
+.btn {
+    width: 100px;
+    margin-right: 20px;
+    display: inline-block;  
+    font-size: 13px;  
+    &.cancel-btn {
+        border: 1px solid #017ED5;
+        padding: 6px;
+        color: #017ED5;
+    }
+}
+/*.add-btn {
+    color: #0073CF;
+    cursor: pointer;
+}*/
+
+
+.info-icon {
+    color: #158FEF;
+    line-height: 1;
+    font-size: 19px;
+    //padding-left: 5px;
+    //padding: 3px 0px 0px 8px;
+    position: absolute;
+    left: 57px;
+    right: 0;
+    &.checkbox-info {
+      line-height: 1;
+    }
+  }
+  .violation-list-next-btn{
+      display: none;
+  }

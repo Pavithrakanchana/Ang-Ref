@@ -1,0 +1,14 @@
+<mat-accordion [multi]="false">
+    <mat-expansion-panel hideToggle [expanded]="true" id="feePanel" class="bwr-mat-expansion-panel pay-plan-panel mb-2">
+        <mat-expansion-panel-header id="payPlanHeaderPanel">
+            <mat-panel-title>
+                <h5 class="bw-header5">Service Fees - Not Included in Total Premium</h5>
+                <span class="material-icons open">arrow_drop_down</span>
+                <span class="material-icons close">arrow_drop_up</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngFor="let fee of this.fees">
+            <p class="mat-label-font " *ngIf="fee.theCurrencyAmount != '0.00' && fee.theCurrencyAmount != '0'">{{ fee.type }} <span class="pl-2 bold">{{ fee.theCurrencyAmount || 0 | currency }}</span></p>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>

@@ -1,0 +1,330 @@
+<div class="row" id="topcontent">
+   <div class="col-3">
+      <h3 class="bw-header3" style="width:80%;">
+         <strong>Vehicles</strong>
+      </h3>
+   </div>
+   <div class="col-9">
+      <a (click)="addVehicle()" class="add-vehicle-link float-right"
+         *ngIf="addVehicleBtnStatus > 3 && 6 > addVehicleBtnStatus && !nonOwnerIndicator">+ Add New Vehicle</a>
+   </div>
+</div>
+<!-- App Errors -->
+<app-messages>{{ errorMessage }}</app-messages>
+<div class="bwr-vehicle-form">
+   <form [formGroup]="vehiclesForm">
+      <!-- list of vehicles -->
+      <div formArrayName="vehicles">
+         <div class="vehicle-flex-container">
+            <div *ngFor="let vehicle of vehiclesArrayControl; index as i" id="{{i}}"
+               [ngClass]="{'display-none': vehiclesFormGroup(i).controls.operation.value == 'delete'}"
+               class="container-list">
+               <mat-expansion-panel hideToggle [expanded]="true" id="vehiclePanel{{i}}" class="bwr-mat-expansion-panel">
+                  <mat-expansion-panel-header #panelH id="vehicleHeaderPanel{{i}}" (click)="panelH._toggle()"
+                     id="header{{i}}">
+                     <mat-panel-title>
+                        <h4 class="bw-header4">Vehicle {{vehiclesFormGroup(i).controls.vehIndexNumber.value}} </h4>
+                        <button mat-icon-button type="button" class="delete-btn" id="delete{{i}}" *ngIf="i > 0"
+                           (click)="removeVehicle(i)">
+                           <mat-icon>delete</mat-icon>
+                        </button>
+                     </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div [formGroupName]="i">
+
+                     <div class="row">
+                        <div class="col-md-12">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Type</mat-label>
+                              <mat-select placeholder="Type" id="type{{i}}" formControlName="type"
+                                 (selectionChange)="onTypeChange($event.value,i)">
+                                 <ng-container *ngFor="let typeVal of vehicleObject.typeValues">
+                                    <mat-option *ngIf="i == 0" [value]="typeVal.key">
+                                       {{typeVal.displayvalue}}
+                                    </mat-option>
+                                    <mat-option *ngIf="i > 0 && typeVal.key !== 'N'" [value]="typeVal.key">
+                                       {{typeVal.displayvalue}}
+                                    </mat-option>
+                                 </ng-container>
+
+                              </mat-select>
+
+                              <mat-error class="" id="typeReq{{i}}" *ngIf="hasError('type', 'required', i)">
+                                 Type field is required
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+
+                     <div class="row" *ngIf="vehiclesFormGroup(i).controls.type.value !== 'N'">
+
+                        <div class="col-md-10 col-10">
+                           <mat-form-field class="field-full-width mandatory-field"
+                              [class.mandatory-field]="vehiclesFormGroup(i).controls.type.value !== 'C' && vehiclesFormGroup(i).controls.year.value > 1980"
+                              appearance="outline">
+                              <mat-label>VIN</mat-label>
+                              <input matInput placeholder="Please Select" value="" id="vin{{i}}" formControlName="vin"
+                                 (blur)="decodeVin(i,[])" maxLength="17" pattern="^[A-Za-z0-9]*$">
+                              <button mat-button matSuffix mat-icon-button (click)="decodeVin(i,[])">
+                                 <mat-icon>search</mat-icon>
+                              </button>
+                              <mat-error class="" id="vinReq{{i}}" *ngIf="hasError('vin', 'required', i)">
+                                 VIN field is required
+                              </mat-error>
+                              <mat-error class=" " id="vinMin{{i}}" *ngIf="hasError('vin', 'minlength', i)">
+                                 Minimum length is 10
+                              </mat-error>
+                              <mat-error class="" id="vinPat{{i}}"
+                                 *ngIf="!hasError('vin', 'minlength', i) && hasError('vin', 'pattern', i)">
+                                 VIN contains invalid character(s). Please enter a valid VIN for verification.
+                              </mat-error>
+                           </mat-form-field>
+
+                        </div>
+                        <div class="col-md-2 col-2 pl-0 align-self-center">
+                           <mat-icon class="info-icon" id="vinHelp{{i}}" aria-label="icon" matTooltip="" aria-label=""
+                              matTooltipClass="bwr-tooltip" (click)="loadHelpText('36')">info</mat-icon>
+                        </div>
+
+                     </div>
+                     <div class="row" *ngIf="vehiclesFormGroup(i).controls.type.value !== 'N'">
+
+                        <div class="col-md-6 col-6" [class.col-12]="displayACVFlag[i]"
+                           [class.col-md-12]="displayACVFlag[i]">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Year</mat-label>
+                              <input matInput [readonly]="isVINValid[i]" placeholder="Please Select" id="year{{i}}"
+                                 aria-label="Select Year" [matAutocomplete]="autoyear" formControlName="year"
+                                 maxlength="4" (blur)="retrieveMakes(i)">
+                              <mat-error class="" id="yearReq{{i}}" *ngIf="hasError('year', 'required', i)">
+                                 Year field is required
+                              </mat-error>
+                           </mat-form-field>
+
+                           <mat-autocomplete #autoyear="matAutocomplete">
+                              <mat-option *ngFor="let yearVal of vehicleYears[i] | async" [value]="yearVal.key"
+                                 (click)="retrieveMakes(i)">
+                                 {{yearVal.displayvalue}}
+                              </mat-option>
+
+                           </mat-autocomplete>
+                        </div>
+
+                        <div class="col-md-6 col-6"
+                           *ngIf="!displayACVFlag[i] && vehiclesFormGroup(i).controls.type.value !== 'N'">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Make</mat-label>
+                              <input matInput [readonly]="isVINValid[i]" placeholder="Please Select" id="make{{i}}"
+                                 aria-label="Select Make" [matAutocomplete]="automake" formControlName="make"
+                                 (blur)="retrieveModels(i)">
+                              <mat-error class="" id="makeReq{{i}}" *ngIf="hasError('make', 'required', i)">
+                                 Make field is required
+                              </mat-error>
+                           </mat-form-field>
+
+                           <mat-autocomplete #automake="matAutocomplete">
+                              <mat-option *ngFor="let makeVal of vehicleMakes[i] | async"
+                                 [value]="makeVal.displayvalue">
+                                 {{makeVal.displayvalue}}
+                              </mat-option>
+
+                           </mat-autocomplete>
+
+                        </div>
+                     </div>
+
+                     <div class="row" *ngIf="!displayACVFlag[i] && vehiclesFormGroup(i).controls.type.value !== 'N'">
+
+                        <div class="col-md-6">
+
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Model</mat-label>
+                              <input matInput [readonly]="isVINValid[i]" placeholder="Please Select" id="model{{i}}"
+                                 aria-label="Select Model" [matAutocomplete]="automodel" formControlName="model"
+                                 (blur)="retrieveBodyTypes(i)">
+                              <mat-error class="" id="modelReq{{i}}" *ngIf="hasError('model', 'required', i)">
+                                 Model field is required
+                              </mat-error>
+                           </mat-form-field>
+
+                           <mat-autocomplete #automodel="matAutocomplete">
+                              <mat-option *ngFor="let modelVal of vehicleModels[i] | async"
+                                 [value]="modelVal.displayvalue">
+                                 {{modelVal.displayvalue}}
+                              </mat-option>
+                           </mat-autocomplete>
+                        </div>
+
+                        <div class="col-md-6">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Body Type</mat-label>
+                              <input matInput [readonly]="isVINValid[i]" placeholder="Please Select" id="bodyType{{i}}"
+                                 aria-label="Select BodyType" [matAutocomplete]="autobodyType"
+                                 formControlName="bodyType" (blur)="retrieveTrims(i)">
+                              <mat-error class="" id="bodytypeReq{{i}}" *ngIf="hasError('bodyType', 'required', i)">
+                                 Body Type is required
+                              </mat-error>
+                           </mat-form-field>
+
+                           <mat-autocomplete #autobodyType="matAutocomplete">
+                              <mat-option *ngFor="let mbodyTypeVal of vehicleBodyTypes[i] | async"
+                                 [value]="mbodyTypeVal.key">
+                                 {{mbodyTypeVal.displayvalue}}
+                              </mat-option>
+                           </mat-autocomplete>
+                        </div>
+                     </div>
+                     <input formControlName="symbols" class="display-none">
+                     <input formControlName="antiLockBrakesOption" class="display-none">
+                     <input formControlName="airBagTypeCode" class="display-none">
+                     <input formControlName="daylightRunningLightsOption" class="display-none">
+                     <div class="row"
+                        *ngIf="!displayACVFlag[i] && vehiclesFormGroup(i).controls.type.value !== 'N' && vehicleTrimsDB[i] && vehicleTrimsDB[i].length > 0">
+                        <div class="col-12">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Trim</mat-label>
+                              <input matInput [readonly]="isVINValid[i]" placeholder="Please Select" id="trim{{i}}" aria-label="Select Trim"
+                               [matAutocomplete]="autoBodyTrims" formControlName="trim" [readonly]="vehicleTrimsDB[i] && vehicleTrimsDB[i].length === 1" (blur)="pickVinPrefix(i)">
+                              <mat-error class="" id="trimReq{{i}}" *ngIf="hasError('trim', 'required', i)">
+                                 Trim field is required
+                              </mat-error>
+                           </mat-form-field>
+                           <mat-autocomplete #autoBodyTrims="matAutocomplete">
+                              <mat-option *ngFor="let trimVal of vehicleTrims[i] | async"
+                                 [value]="trimVal.displayvalue">
+                                 {{trimVal.displayvalue}}
+                              </mat-option>
+                           </mat-autocomplete>
+                        </div>
+                     </div>
+
+
+
+                     <div class="row" *ngIf="displayACVFlag[i]">
+                        <div class="col-12">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>ACV</mat-label>
+                              <input matInput placeholder="#####" maxlength="5" value="acv" id="acv{{i}}"
+                                 formControlName="acv">
+
+                              <mat-error class="" id="acvReq{{i}}" *ngIf="hasError('acv', 'required', i)">
+                                 ACV field is required
+                              </mat-error>
+                              <mat-error class="" id="acvReqone{{i}}" *ngIf="hasError('acv', 'pattern', i)">
+                                 Enter valid ACV
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-md-10 col-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Use</mat-label>
+                              <mat-select placeholder="Use" id="use{{i}}" formControlName="use"
+                                 (selectionChange)="onUseChange($event,i)">
+                                 <mat-option *ngFor="let useVal of vehicleUseValues[i]" [value]="useVal.key">
+                                    {{useVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="" id="useReq{{i}}" *ngIf="hasError('use', 'required', i)">
+                                 Use is required
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0 align-self-center">
+                           <mat-icon class="info-icon" id="vinUse{{i}}" aria-label="icon" matTooltip="" aria-label=""
+                              matTooltipClass="bwr-tooltip" (click)="loadHelpText('41')">info</mat-icon>
+                        </div>
+
+                     </div>
+
+
+                     <div class="row" *ngIf="vehiclesFormGroup(i).controls.type.value !== 'N'">
+                        <div class="col-12">
+                           <mat-form-field class="field-full-width" appearance="outline">
+                              <mat-label>Odometer</mat-label>
+                              <input matInput placeholder="#######" maxlength="7" value="odometer" id="odometer{{i}}"
+                                 formControlName="odometer">
+
+                              <mat-error class="" id="odometerReq{{i}}" *ngIf="hasError('odometer', 'required', i)">
+                                 Odometer is required
+                              </mat-error>
+                              <mat-error class="" id="odometerPat{{i}}" *ngIf="hasError('odometer', 'pattern', i)">
+                                 Enter valid Odometer
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+
+                     <app-vehiclecoverage-validvalues #vehCov [item]="this.vehiclesForm.controls.vehicles.value[i]"
+                        [covIndex]="i" [coveragesForm]="this.vehiclesFormGroup(i)" [vehicleList]="this.vehicleList"
+                        [vehicleCoverages]="this.dbVehiclesData" [layout]="this.layout" [page]="this.page">
+                     </app-vehiclecoverage-validvalues>
+                     <!--Temporary Section for Commute field-->
+                     <div class="row" *ngIf="this.commuteRequired">
+                        <div class="col-md-10 col-10">
+                        <label class="veh-cov-label mat-label-font">Commute to NJ/NY</label>
+                     </div>
+                     </div>
+                     <div class="row" *ngIf="this.commuteRequired">
+                        <div class="col-md-10 col-10">
+                           <mat-radio-group class="w-100 mandatory-field" formControlName="commuteToNJNYSurcharge"
+                              aria-label="Select an option" id="commuteToNJNYSurcharge{{i}}">
+                              <mat-radio-button class="mr-5 click-area" value="Y">Yes
+                              </mat-radio-button>
+                              <mat-radio-button class="mr-5 click-area" value="N">No
+                           </mat-radio-button>
+                        </mat-radio-group>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-md-10 col-10">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Garaging ZIP Code</mat-label>
+
+                              <input matInput placeholder="xxxxx-xxxx" value="" id="garageZipCode{{i}}" minlength="5"
+                                 maxlength="10" (ngModelChange)="onZipcodeChange($event)"
+                                 formControlName="garageZipCode" appZipcodeFormat (blur)="getStatesByZipcode(i)">
+
+                              <mat-error class=" " id="garageZipcodeReq{{i}}"
+                                 *ngIf="hasError('garageZipCode', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>ZIP code is required
+                              </mat-error>
+                              <mat-error class=" " id="garageZipcodeValid{{i}}"
+                                 *ngIf="!hasError('garageZipCode', 'required', i) && vehiclesFormGroup(i).controls.garageZipCode.invalid &&
+                                        (vehiclesFormGroup(i).controls.garageZipCode.dirty || vehiclesFormGroup(i).controls.garageZipCode.touched)">
+                                 Enter Valid ZIP
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0 align-self-center">
+                           <mat-icon class="info-icon checkbox-info align-self-center" aria-label="icon" matTooltip=""
+                              aria-label="" id="roadSideHelp{{i}}" matTooltipClass="bwr-tooltip"
+                              (click)="loadHelpText('29')">info</mat-icon>
+                        </div>
+                     </div>
+
+                     <input formControlName="operation" class="display-none">
+                     <input formControlName="dbVehicleSeqNo" class="display-none">
+                     <input formControlName="vehIndexNumber" class="display-none">
+
+                  </div>
+               </mat-expansion-panel>
+            </div>
+            <div class="container-list" *ngIf="4 > addVehicleBtnStatus && !nonOwnerIndicator">
+               <div mat-raised-button id="addVehicle" class="add-btn" (click)="addVehicle()">
+                  + Add New Vehicle
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="footer-buttons pt-4 pb-4">
+         <button class="btn btn-primary btn-next float-left" id="back" (click)="onClickBack(vehiclesForm)">
+            <span>
+               < Back</span> </button>
+         <button type="submit" id="next" #next class="btn btn-primary btn-next float-right"
+            (click)="onSubmit(vehiclesForm.value)">
+            <span>Next ></span></button>
+      </div>
+   </form>
+</div>

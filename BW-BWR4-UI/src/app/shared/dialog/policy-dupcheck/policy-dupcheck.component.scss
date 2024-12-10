@@ -1,0 +1,9 @@
+::ng-deep .dup-check-content {
+  .mat-dialog-container {
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  .mat-dialog-actions {
+    display: inline;
+  }
+}

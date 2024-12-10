@@ -1,0 +1,451 @@
+<div class="row" id="topcontent">
+   <div class="col-9">
+      <h2 class="bw-header3 applicant" style="width: 80%;">
+         Drivers
+      </h2>
+   </div>
+
+   <div class="col-3">
+      <a (click)="addDriver()" class="add-driver-link float-right"
+         *ngIf="driversArrayControl.length > 3 && 6 > driversArrayControl.length">+ Add New Driver</a>
+   </div>
+</div>
+
+<!-- App Errors -->
+<app-messages>{{ errorMessage }}</app-messages>
+
+<div class="bwr-driver-form">
+   <form [formGroup]="driversForm">
+      <!-- list of drivers -->
+      <div formArrayName="drivers">
+         <div class="driver-flex-container">
+            <div *ngFor="let driver of driversArrayControl ;  index as i" id="{{i}}"
+               [ngClass]="{'display-none': driversFormGroup(i).controls.operation.value == 'delete'}"
+               class="container-list">
+               <mat-expansion-panel hideToggle [expanded]="true" class="bwr-mat-expansion-panel">
+                  <mat-expansion-panel-header #panelH (click)="panelH._toggle()" id="header{{i}}">
+                     <mat-panel-title>
+                        <h4 class="bw-header4 applicant">Driver {{ i + 1}} </h4>
+                        <button mat-icon-button type="button" class="delete-btn" id="delete{{i}}" *ngIf="i > 0"
+                           (click)="removeDriver(i)">
+                           <mat-icon>delete</mat-icon>
+                        </button>
+                     </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div [formGroupName]="i">
+                     <div class="row">
+                        <div class="col-md-7">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>First Name</mat-label>
+                              <input matInput placeholder="First Name" maxlength="15" id="firstname{{i}}" value=""
+                                 formControlName="firstname" (blur)="trimSpace('firstname', i)" (change)="onPNIchange($event,i)"
+                                 [readonly]="checkForUndefined(sourceReportStatus[i], 'firstName')"
+                                 [disabled]="checkForUndefined(sourceReportStatus[i], 'firstName') || false">
+                              <mat-error class="" id="fisrtnameReq{{i}}" *ngIf="hasError('firstname', 'required', i)">
+                                 First Name is required
+                              </mat-error>
+                              <mat-error class="" id="fisrtnamePat{{i}}" *ngIf="hasError('firstname', 'pattern', i)">
+                                 Enter valid First Name
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-5">
+                           <mat-form-field class="field-full-width" appearance="outline">
+                              <mat-label>MI</mat-label>
+                              <input matInput placeholder="MI" maxlength="1" value="" id="middlename{{i}}"
+                                 formControlName="middlename" (blur)="trimSpace('middlename', i)" (change)="onPNIchange($event,i)">
+                              <mat-error class="" id="middlenamePat{{i}}" *ngIf="hasError('middlename', 'pattern', i)">
+                                 Enter valid MI
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-md-7">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>Last Name</mat-label>
+                              <input matInput placeholder="Last Name" maxlength="20" value="" id="lastname{{i}}"
+                                 formControlName="lastname" (blur)="trimSpace('lastname', i)" (change)="onPNIchange($event,i)"
+                                 [readonly]="checkForUndefined(sourceReportStatus[i], 'lastName')"
+                                 [disabled]="checkForUndefined(sourceReportStatus[i], 'lastName') || false">
+                              <mat-error class="" id="lastnameReq{{i}}" *ngIf="hasError('lastname', 'required', i)">
+                                 Last Name is required
+                              </mat-error>
+                              <mat-error class="" id="lastnamePat{{i}}" *ngIf="hasError('lastname', 'pattern', i)">
+                                 Enter valid Last Name
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-5">
+                           <mat-form-field class="field-full-width bwr-dropdown" appearance="outline">
+                              <mat-label>Suffix</mat-label>
+                              <mat-select class="" placeholder="Suffix" id="suffix{{i}}" formControlName="suffix"
+                                 (selectionChange)="onPNIchange($event,i)">
+                                 <mat-option *ngFor="let sufVal of drivers.suffixValues" [value]="sufVal.key">
+                                    {{sufVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="mb-3" id="suffixReq{{i}}" *ngIf="hasError('suffix', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Suffix is required </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-12">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Gender</mat-label>
+                              <mat-select class=" mandatory-field" placeholder="Gender" id="gender{{i}}"
+                                 formControlName="gender">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let genderVal of drivers.genderValues" [value]="genderVal.key">
+                                    {{genderVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="mb-3" id="genderReq{{i}}" *ngIf="hasError('gender', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Gender is required</mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-12">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <!-- Date Of Birth-->
+                              <mat-label>Date of Birth</mat-label>
+                              <input matInput appDateformatter [min]="minDate" [max]="todayDate"
+                                 [matDatepicker]="pickerbirth" id="birthdate{{i}}" formControlName="dob" maxlength="10"
+                                 (dateChange)="onDOBChange(i)"
+                                 [readonly]="checkForUndefined(sourceReportStatus[i],'birthDate') || isMVRDOBChanged[i]">
+
+                              <mat-datepicker-toggle matSuffix [for]="pickerbirth"></mat-datepicker-toggle>
+                              <mat-datepicker #pickerbirth
+                                 [disabled]="checkForUndefined(sourceReportStatus[i],'birthDate') || isMVRDOBChanged[i]"></mat-datepicker>
+                              <mat-error class="mb-3" id="birthdateReq{{i}}"
+                                 *ngIf="!driversFormGroup(i).controls.dob?.valid"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>Date Of Birth is required</mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Marital Status</mat-label>
+                              <mat-select placeholder="Marital Status" id="maritalStatus{{i}}"
+                                 formControlName="maritalStatus">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let martStatVal of drivers.maritalStatusValues"
+                                    [value]="martStatVal.key">
+                                    {{martStatVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="mb-3" id="maritalStatusReq{{i}}"
+                                 *ngIf="hasError('maritalStatus', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Marital Status is required
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-1 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('8')" matTooltipClass="bwr-tooltip">info</mat-icon>
+
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Relationship to Insured</mat-label>
+                              <mat-select class=" mandatory-field" placeholder="Relationship to insured"
+                                 id="relationship{{i}}" formControlName="relationship">
+                                 <mat-option *ngIf="(i == 0)" value="I">Insured</mat-option>
+                                 <div *ngIf="(i > 0)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <mat-option *ngFor="let relationVal of drivers.relationValues"
+                                       [value]="relationVal.key">
+                                       {{relationVal.displayvalue}}
+                                    </mat-option>
+                                 </div>
+                              </mat-select>
+                              <mat-error class="mb-3" id="relationshipReq{{i}}"
+                                 *ngIf="hasError('relationship', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Relationship to insured is required
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('9')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" style="display: none;">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown" appearance="outline">
+                              <mat-label>Education Level</mat-label>
+                              <mat-select class="" placeholder="Education Level (Optional)" id="education{{i}}"
+                                 formControlName="education">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let eduVal of drivers.educationValues" [value]="eduVal.value">
+                                    {{eduVal.viewValue}}
+                                 </mat-option>
+                              </mat-select>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('628')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" style="display: none;">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown" appearance="outline">
+                              <mat-label>Occupation</mat-label>
+                              <mat-select class="" placeholder="Occupation (Optional)" formControlName="occupation"
+                                 id="occupation{{i}}" (selectionChange)="displaySubOccupation($event,i)">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let occVal of drivers.occupationValues" [value]="occVal.value">
+                                    {{occVal.viewValue}}
+                                 </mat-option>
+                              </mat-select>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('629')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="displaySubOccuByDriver[i]">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown" appearance="outline">
+                              <mat-label>Sub-Occupation</mat-label>
+                              <mat-select class="" placeholder="Sub Occupation (Optional)"
+                                 formControlName="suboccupation" id="suboccupation{{i}}">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let subOccVal of drivers.subOccupationValues"
+                                    [value]="subOccVal.value">
+                                    {{subOccVal.viewValue}}
+                                 </mat-option>
+                              </mat-select>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('630')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>License Type</mat-label>
+                              <mat-select class="" placeholder="License Type" id="licenseType{{i}}"
+                                 formControlName="licenseType" (selectionChange)="displayDrivLicense($event,i);">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let licTypeVal of drivers.licenseTypeValues"
+                                    [value]="licTypeVal.key">
+                                    {{licTypeVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="mb-3" id="licenseTypeReq{{i}}"
+                                 *ngIf="hasError('licenseType', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> License Type is required</mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('11')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="displayLicTypeByDriver[i]">
+                        <div class="col col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                           <mat-form-field class="field-full-width" appearance="outline">
+                              <mat-label>Drivers License/ID #</mat-label>
+                              <input matInput placeholder="License number" maxlength="19" value=""
+                                 id="licenseNumber{{i}}" formControlName="licensenumber">
+                              <mat-error class="" id="licensenumberPat{{i}}"
+                                 *ngIf="hasError('licensenumber', 'pattern', i)">
+                                 Enter valid LicenseID
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>License State</mat-label>
+                              <mat-select class="" placeholder="State" formControlName="licensestate"
+                                 id="licensestate{{i}}">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let licStateVal of drivers.licenseStateValues"
+                                    [value]="licStateVal.key">
+                                    {{licStateVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error class="mb-3" id="licensestate{{i}}"
+                                 *ngIf="hasError('licensestate', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> License State is required</mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Rated</mat-label>
+                              <mat-select class=" mandatory-field" placeholder="Rated" id="rated{{i}}"
+                                 formControlName="rated" (selectionChange)="onFilingOrRatedOrLicTypChange(i)"
+                                 [disabled]="(checkForUndefined(sourceReportStatus[i], 'rated') || (((i != 0 && !this.hasExcludedOption(i)) || this.hasExcludedOption(i)) && this.isRatedReadOnly[i]) )|| false">
+                                 <ng-container *ngFor="let ratedVal of drivers.ratedValues">
+                                    <mat-option [value]="ratedVal.key" *ngIf="(i ==  0 && 'E' != ratedVal.key && !this.hasExcludedOption(i)) || ((i != 0 || this.hasExcludedOption(i)) && this.isLicenseTypeRevoked[i] && 'R' != ratedVal.key) ||
+                                       ((i != 0 || this.hasExcludedOption(i)) && !this.isLicenseTypeRevoked[i])">
+                                       {{ratedVal.displayvalue}}
+                                    </mat-option>
+                                 </ng-container>
+                              </mat-select>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('10')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="reasonEnable(i)">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Reason</mat-label>
+                              <mat-select class="" placeholder="Reason" id="reason{{i}}" formControlName="reason">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option *ngFor="let reasonVal of this.drivers.reasonValues"
+                                    [value]="reasonVal.key">
+                                    {{reasonVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <mat-error
+                                 class=""
+                                 id="reasonError{{ i }}"
+                                 *ngIf="hasError('reason', 'required', i)"
+                                 >
+                                 <em class="fas fa-exclamation-triangle pr-1">Reason is  Required</em>
+
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <div class="col-10 col-md-10" *ngIf="licenseMoreThenOneYearEnable(i)">
+                        <mat-label class="field-full-width">Has driver been licensed less than 1 year?</mat-label>
+                        <div class="mt-2">
+                            <mat-radio-group class="w-100 mandatory-field" id="licenselessthenoneyear" aria-label="Select an option"
+                                formControlName="licenselessthenoneyear">
+                                <mat-radio-button class="mr-2 click-area" value="Y">Yes
+                                </mat-radio-button>
+                                <mat-radio-button
+                                    class="click-area" value="N">No</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                     <input formControlName="operation" class="display-none">
+                     <input formControlName="source" class="display-none">
+                     <input formControlName="dbDriverSeqNo" class="display-none">
+                     <div class="row" *ngIf="sr22FillingEnable(i)">
+                        <div class="col-10 col-md-10">
+                           <mat-checkbox class="" formControlName="filing" id="filing{{i}}" (change)="sr22FillingCheckboxChange(i)"> SR22 Filing</mat-checkbox>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon checkbox-info" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('13')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+
+                     <!--US350759 Starts-->
+                     <div class="row" *ngIf="fillingEnable(i)">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Filing</mat-label>
+                              <mat-select class="" placeholder="Filing Type" id="filingType{{i}}"
+                                 formControlName="filingType" (selectionChange)="displayCaseNumberByFilingType($event,i);">
+                                 <mat-option *ngFor="let filingTypeVal of this.drivers.filingValues"
+                                    [value]="filingTypeVal.key">
+                                    {{filingTypeVal.displayvalue}}
+                                 </mat-option>
+                              </mat-select>
+                              <!-- <mat-error class="mb-3" id="licenseTypeReq{{i}}"
+                                 *ngIf="hasError('licenseType', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> License Type is required</mat-error> -->
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('13')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="displayCaseNumber[i]">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <mat-label>({{this.driversFormGroup(i).controls.firstname.value}}) - SR22/FR44 Case Number</mat-label>
+                              <input matInput placeholder="Case Number" maxlength="9" minlength="9" value=""
+                                 id="caseNumber{{i}}" formControlName="caseNumber" (blur)="setCaseNumberValidation($event); trimSpace('caseNumber', i)">
+                                 <mat-error class="mb-3" id="caseNumberReq{{i}}"
+                                 *ngIf="hasError('caseNumber', 'required', i)"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em> Case Number is required</mat-error>
+                              <mat-error class="" id="caseNumberValid{{i}}"
+                                 *ngIf="!hasError('caseNumber', 'required', i) && driversFormGroup(i).controls.caseNumber.invalid && (driversFormGroup(i).controls.caseNumber.dirty || driversFormGroup(i).controls.caseNumber.touched)">
+                                 State Filing Number is Invalid. Please correct.
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                     <!--US350759 Ends-->
+                     <div class="row" *ngIf="(ageless23[i] && driversFormGroup(i).controls.relationship.value == 'C' &&
+                     !(driversFormGroup(i).controls.relationship.value == 'I') || (driversFormGroup(i).controls.distantstd.value === true ))">
+                        <div class="col-10 col-md-10">
+                           <mat-checkbox class="" formControlName="distantstd" id="distantstd{{i}}">Distant Student
+                           </mat-checkbox>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0 pt-1">
+                           <img class="logo distant-img" src="assets/img/piggy.svg" id="piggyIcon" alt="piggy"
+                              (click)="loadHelpText('16')" />
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="matureDriverEnable(i)">
+                        <div class="col-10 col-md-10">
+                           <mat-checkbox class="" formControlName="matureDriver" id="matureDriver{{i}}" (change)="onmatureDriverChange(i)">
+                            {{this.riskState == "VA" ? "Senior Driver" : (this.riskState == "PA" ? "Drv. Improv. Cert." :"Mature Driver")}}
+                           </mat-checkbox>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0 pt-1">
+                           <img class="logo matureDriver-img" src="assets/img/piggy.svg" id="piggyIcon" alt="piggy"
+                              (click)="loadHelpText('19')" />
+                        </div>
+                     </div>
+                     <div class="row" *ngIf="courseDateEnable(i) && this.courseDateOnMature">
+                        <div class="col-10 col-md-10">
+                           <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                              <!-- Date Of Birth-->
+                              <mat-label>{{riskState === 'PA' ? 'Drv. Improv. Date' : 'Course Date'}}</mat-label>
+                              <input matInput appDateformatter [matDatepicker]="pickerCourseDate" [max]="todayDate"  (dateChange)="calculateCourseDate(i)"
+                                 id="courseDate{{i}}" formControlName="courseDate" maxlength="10">
+                              <mat-datepicker-toggle matSuffix [for]="pickerCourseDate"></mat-datepicker-toggle>
+                              <mat-datepicker #pickerCourseDate></mat-datepicker>
+                              <mat-error class="mb-3" id="courseDateReq{{i}}"
+                                 *ngIf="!driversFormGroup(i).controls.courseDate?.valid"><em
+                                    class="fas fa-exclamation-triangle pr-1"></em>{{riskState === 'PA' ? 'Drv. Improv. Date' : 'Course Date'}} is required</mat-error>
+                           </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                           <mat-icon class="info-icon" aria-label="icon" matTooltip="" aria-label=""
+                              (click)="loadHelpText('20')" matTooltipClass="bwr-tooltip">info</mat-icon>
+                        </div>
+                     </div>
+                  </div>
+               </mat-expansion-panel>
+            </div>
+            <div class="container-list" *ngIf="4 > driversArrayControl.length">
+               <div mat-raised-button id="addDriver" class="add-btn" (click)="addDriver()">
+                  + Add New Driver
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="footer-buttons pt-4 pb-4">
+         <button class="btn btn-primary btn-next float-left" id="back" (click)="onClickBack()">
+            <span>
+               &lt; Back</span>
+         </button>
+         <button type="submit" #next class="btn btn-primary btn-next float-right" id="next" (click)="onSubmit()">
+            <span>Next &gt;</span></button>
+      </div>
+   </form>
+</div>

@@ -1,0 +1,46 @@
+<form class="policyinfo-form" [formGroup]="formRef" >
+    <div class="row">
+        <div class="col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+            <div class="row">
+                <div class="col-md-10 col-10">
+                <mat-label class="font-size-14 font-weight-500" *ngIf="this.page === 'review'">Down Payment Method</mat-label>
+                    <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline" [ngClass]="{'content-disable':this.page === 'review'}">
+                        <mat-label>Select Down Payment Method</mat-label>
+                        <mat-select placeholder="Select Down Payment Method" id="downPayment" formControlName="downPayment" (selectionChange)="checkForRerate('downpay', $event.value)">
+                            <mat-option *ngFor="let downPayment of this.downpaymentValidValues" [value]="downPayment.key">{{ downPayment.displayvalue }}</mat-option>
+                        </mat-select>
+                        <mat-error id="downPayment" *ngIf="hasError('downPayment', 'null', 'required')">
+                            <em class="fas fa-exclamation-triangle pr-1"></em>Select Down Payment Method is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2 col-2 pl-0">
+                    <mat-icon *ngIf="this.page !== 'review'" class="info-icon" aria-label="icon" id="downpayHelp"
+                              matTooltip="" aria-label="Button that displays a tooltip when focused or hovered over"
+                              matTooltipClass="bwr-tooltip" (click)="loadHelpText('201')">info</mat-icon>
+                    <mat-icon *ngIf="this.page == 'review'" class="info-icon maticon-align" aria-label="icon" id="downpayHelp"
+                               matTooltip="" aria-label="Button that displays a tooltip when focused or hovered over"
+                               matTooltipClass="bwr-tooltip" (click)="loadHelpText('201')">info</mat-icon>
+                        </div>
+            </div>
+        </div>
+        <div class="col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+        <div class="row">
+            <div class="col-md-10 col-10">
+                <mat-label class="font-size-14 font-weight-500" *ngIf="this.page === 'review'">Installment Payments</mat-label>
+                <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline" [ngClass]="{'content-disable':this.page === 'review'}">
+                    <mat-label>Select EFT for Future Installments</mat-label>
+                    <mat-select class="mandatory-field" placeholder="Select EFT for Future Installments" id="eft" formControlName="eft" (selectionChange)="checkForRerate('eft', $event.value)">
+                        <mat-option *ngFor="let eft of this.installmentValidValues" [value]="eft.key"> {{ eft.displayvalue }}</mat-option>
+                    </mat-select>
+                    <mat-error class="mb-3" id="eftReq" *ngIf="hasError('eft', 'null', 'required')">
+                        <em class="fas fa-exclamation-triangle pr-1"></em> EFT for Future Installments is required</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2 col-2 pl-0">
+                <img class="logo piggy-icon" src="assets/img/piggy.svg" id="piggyIcon" alt="piggy" [ngClass]="{'review-content':this.page === 'review'}" (click)="loadHelpText('116')"/>
+            </div>
+        </div>
+        </div>
+    </div>
+    </form>

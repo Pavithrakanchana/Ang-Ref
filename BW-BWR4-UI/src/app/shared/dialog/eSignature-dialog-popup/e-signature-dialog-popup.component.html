@@ -1,0 +1,15 @@
+<div mat-dialog-content>
+    <p class="mt-3">The Policyholder chose to sign the application using eSignature.</p>
+    <p>Please direct the policyholder to follow the instructions in the invitation email and complete the
+        eSignature process.</p>
+    <p>Alternatively, to direct the customer to www.bristolwest.com/register to register and complete the
+        eSignature process. Please provide the customer with their policy number for registration.</p>
+</div>
+<div mat-dialog-actions>
+    <button mat-raised-button id="ok" class="mt-3 btn btn-primary btn-next float-right" (click)="submit()">OK</button>
+    <button mat-raised-button id="cancel" class="mt-3 btn float-left" (click)="dialogRef.close(false)">
+        Cancel
+    </button>
+
+</div>
+

@@ -1,0 +1,28 @@
+.close {
+    position: relative;
+    top: -5 !important;
+    right: 0 !important;
+    padding: 0px;
+    margin: 0;
+    line-height: 10px;
+    min-width: auto;
+  }
+  .helptext-header {
+    height: 28px;
+    background: #025aaa;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding: 12px 20px 30px 20px;
+  }
+  .helptext-body {
+      margin: 2%;
+      color: #000!important;
+  }
+  ::ng-deep .full-width-dialog {
+    .mat-dialog-container {
+      padding: 24px !important;
+      color: #fff !important;
+      overflow-y: hidden;
+      overflow-x: hidden;
+    }
+  }

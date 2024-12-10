@@ -1,0 +1,22 @@
+.info-icon {
+    color: #158FEF;
+    line-height: 1.5;
+    &.checkbox-info {
+      line-height: 1;
+    }
+  }
+  ::ng-deep .coverage-dropdown.mat-form-field-appearance-outline.mat-form-field-disabled {
+    .mat-form-field-outline {
+      color: rgb(0 0 0 / 43%) !important;
+    }
+    .mat-form-field-label {
+      color: #7e7d7d !important;
+    }
+  }
+  
+  ::ng-deep input[ng-reflect-disabled="true"], ::ng-deep input[ng-reflect-readonly="true"] {
+    color:#a6a4a4d1 !important;
+  }
+  .spacing{
+    padding-bottom: 12px;
+  }

@@ -1,0 +1,405 @@
+<div class="row" id="topcontent">
+  <h2 class="bw-header3 policyinfo">Policy Info</h2>
+</div>
+<!-- App Errors -->
+<app-messages>{{ errorMessage }}</app-messages>
+<div class="bwr-policyinfo-form">
+  <form class="policyinfo-form" [formGroup]="policyInfoForm">
+     <mat-accordion [multi]="true">
+        <mat-expansion-panel
+           hideToggle
+           [expanded]="true"
+           id="policyPanel"
+           class="bwr-mat-expansion-panel"
+           >
+           <mat-expansion-panel-header id="policyInfoHeaderPanel">
+              <mat-panel-title>
+                 <h5 class="bw-header5">Policy Level Discounts</h5>
+                 <span class="material-icons open">arrow_drop_down</span>
+                 <span class="material-icons close">arrow_drop_up</span>
+              </mat-panel-title>
+           </mat-expansion-panel-header>
+           <div class="row">
+              <div class="col-md-4">
+                 <div class="row">
+                    <div class="col-md-10 col-10">
+                       <mat-form-field
+                          class="field-full-width bwr-dropdown mandatory-field"
+                          appearance="outline"
+                          >
+                          <mat-label>Primary Residence</mat-label>
+                          <mat-select
+                             class="mandatory-field"
+                             placeholder="Primary Residence"
+                             id="primaryResidence"
+                             formControlName="primaryResidence"
+                             >
+                             <mat-option
+                             *ngFor="let residence of policyInfoObj.primaryResidence"
+                             [value]="residence.key"
+                             >
+                             {{ residence.displayvalue }}
+                             </mat-option>
+                          </mat-select>
+                          <mat-error
+                             class="mb-3"
+                             id="residenceReq"
+                             *ngIf="hasError('primaryResidence', 'null', 'required')"
+                             ><em class="fas fa-exclamation-triangle pr-1"></em> Primary
+                             Residence is required
+                          </mat-error
+                             >
+                       </mat-form-field>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                       <img
+                          class="logo piggy-icon"
+                          src="assets/img/piggy.svg" 
+                          id="piggyIcon"
+                          alt="piggy"
+                          (click)="loadHelpText('202')"
+                          />
+                    </div>
+                 </div>
+              </div>
+              <div class="col-md-4">
+                 <div class="row">
+                    <div class="col-md-10 col-10">
+                       <mat-form-field
+                          class="field-full-width bwr-dropdown mandatory-field"
+                          appearance="outline"
+                          >
+                          <mat-label>Multi-policy Discount</mat-label>
+                          <mat-select
+                             placeholder="Multi-policy Discount"
+                             id="multilineDiscount"
+                             formControlName="multilineDiscount"
+                             >
+                             <mat-option value="">Please Select</mat-option>
+                             <mat-option
+                             *ngFor="let multiDiscount of policyInfoObj.multiPolicyDisc"
+                             [value]="multiDiscount.key"
+                             >
+                             {{ multiDiscount.displayvalue }}
+                             </mat-option>
+                          </mat-select>
+                          <mat-error
+                             class=""
+                             id="multilineDiscountReq"
+                             *ngIf="hasError('multilineDiscount', 'null', 'required')"
+                             ><em class="fas fa-exclamation-triangle pr-1"></em
+                             >Multi-policy discount is required
+                          </mat-error>
+                       </mat-form-field>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                       <img
+                          class="logo piggy-icon"
+                          src="assets/img/piggy.svg"
+                          id="piggyIcon"
+                          alt="piggy" (click)="loadHelpText('114')"
+                          />
+                    </div>
+                 </div>
+              </div>
+           </div>
+           <!-- Row 2-->
+           <div class="row">
+              <div class="col-md-4">
+                 <div class="row">
+                    <div class="col-md-10 col-10">
+                       <section class="checkbox-section">
+                          <mat-checkbox
+                             class="checkbox-margin"
+                             name="goPaperlessDiscount"
+                             id="goPaperlessDiscount"
+                             formControlName="goPaperlessDiscount"
+                             >Select Go Paperless Discount
+                          </mat-checkbox>
+                       </section>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                       <img
+                          class="logo piggy-icon"
+                          src="assets/img/piggy.svg"
+                          id="piggyIcon"
+                          alt="piggy" (click)="loadHelpText('113')"
+                          />
+                    </div>
+                 </div>
+              </div>
+              <div class="col-md-4">
+                 <div class="row">
+                    <div class="col-md-10 col-10">
+                       <section class="checkbox-section">
+                          <mat-checkbox
+                             class="checkbox-margin"
+                             name="eSignature"
+                             id="eSignature"
+                             formControlName="eSignature"
+                             >Sign Application using eSignature
+                          </mat-checkbox>
+                       </section>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                       <mat-icon
+                          class="info-icon"
+                          aria-label="icon"
+                          id="eSignHelp"
+                          matTooltip="" 
+                          aria-label="Button that displays a tooltip when focused or hovered over"
+                          matTooltipClass="bwr-tooltip"
+                          (click)="loadHelpText('505')"
+                          >info</mat-icon
+                          >
+                    </div>
+                 </div>
+              </div>
+           </div>
+           <!--Row 3-->
+           <app-payment-methods *ngIf="this.valuesLoaded === true" [page]="page" [formRef]="policyInfoForm" [downpaymentValue]="this.downpaymentValue" 
+           [installmentValue]="this.installmentValue" [hasProducerSweep]="this.hasProducerSweep"></app-payment-methods>
+        </mat-expansion-panel>
+        <!-- Additional Drivers section -->
+        <mat-expansion-panel
+        hideToggle
+        [expanded]="true"
+        id="additionalDriverPanel"
+        class="bwr-mat-expansion-panel"
+        *ngIf="additionalDriverReport && additionalDriverReport.length > 0"
+        >
+        <mat-expansion-panel-header id="additionalDriverHeaderPanel">
+           <mat-panel-title>
+              <h5 class="bw-header5 applicant">Possible Additional Drivers</h5>
+              <span class="material-icons open">arrow_drop_down</span>
+              <span class="material-icons close">arrow_drop_up</span>
+           </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div formArrayName="additionalDrivers">
+           <div class="alert bwr-alert-primary" role="alert" *ngIf="additionalDriverReport.length > 0">
+              <span >&nbsp;</span>
+              <span class="span-text"
+                 > We found potential additional drivers.  Drivers added to the policy will take you back to the Drivers section</span
+                 >
+           </div>
+           <div
+              *ngFor="let driver of additionalDriverReport; let i = index"
+              class="pt-2"
+              >
+              <div [formGroupName]="i">
+                 <div class="row mb-1">
+                    <div class="col col-4">
+                       <h4 class="driver-name mb-2">
+                          {{ driver.firstName }} {{ driver.middleInitial }}
+                          {{ driver.lastName }}
+                       </h4>
+                       <h5>
+                          {{ driver.dateOfBirth }}<span class="pl-1 pr-1"> | </span
+                             >{{ driver.licenceState }} - {{ driver.licenceNumber }}
+                       </h5>
+                    </div>
+                    <div class="col col-4">
+                       <div class="row">
+                          <div class="col-md-10 col-10">
+                             <mat-form-field
+                                class="field-full-width bwr-dropdown mandatory-field"
+                                appearance="outline"
+                                >
+                                <mat-label>Select Action</mat-label>
+                                <mat-select
+                                   placeholder="Select Action"
+                                   id="action{{ i }}"
+                                   formControlName="action"
+                                   (selectionChange)="displayExplanation($event, i)"
+                                   >
+                                   <mat-option value="">Please Select</mat-option>
+                                   <mat-option
+                                   *ngFor="let action of disputeActions[i]"
+                                   [value]="action.key"
+                                   >
+                                   {{ action.displayvalue }}
+                                   </mat-option>
+                                </mat-select>
+                                <mat-error
+                                   class=""
+                                   id="actionError{{ i }}"
+                                   *ngIf="hasError('action', i, 'required')"
+                                   >
+                                   <em class="fas fa-exclamation-triangle pr-1"></em>Action
+                                   is required
+                                </mat-error>
+                             </mat-form-field>
+                          </div>
+                          <div class="col-md-2 col-2 pl-0">
+                          </div>
+                       </div>
+                    </div>
+                    <input formControlName="level" class="display-none">
+                 </div>
+                 <div class="row">
+                    <div class="col-md-4">
+                       <div class="row" *ngIf="addlnDrvExplanationCntrlStatus[i].status">
+                                <div class="col-md-10 col-10">
+                                   <mat-form-field
+                                      class="field-full-width bwr-dropdown mandatory-field"
+                                      appearance="outline"
+                                      >
+                                      <mat-label>Please Select an Explanation</mat-label>
+                                      <mat-select
+                                         placeholder="Please Select an Explanation"
+                                         id="explanation{{ i }}"
+                                         formControlName="explanation"
+                                         (selectionChange)="displayListedDriver($event, i)"
+                                         >
+                                         <mat-option value="">Please Select</mat-option>
+                                         <mat-option
+                                         *ngFor="let explanation of policyInfoObj.explanation"
+                                         [value]="explanation.key"
+                                         >
+                                         {{ explanation.displayvalue }}
+                                         </mat-option>
+                                      </mat-select>
+                                      <mat-error
+                                         class=""
+                                         id="explanationError{{ i }}"
+                                         *ngIf="hasError('explanation', i, 'required')"
+                                         >
+                                         <em class="fas fa-exclamation-triangle pr-1"></em
+                                          >Additional Driver {{ driver.firstName }} {{ driver.middleInitial }}
+                                          {{ driver.lastName }} : Reason Required
+                                      </mat-error>
+                                   </mat-form-field>
+                                </div>
+                                <div class="col-md-2 col-2 pl-0">
+                                </div>
+                             </div>
+
+                    </div>
+                    <div class="col-md-4">
+                       <div class="row" *ngIf="addlnDrvExplanationCntrlStatus[i].status && displayListedDriverStatus[i]">
+                        <div class="col-md-10 col-10">
+                          <mat-form-field
+                             class="field-full-width bwr-dropdown mandatory-field"
+                             appearance="outline"
+                             >
+                             <mat-label>Please Select Listed Driver</mat-label>
+                             <mat-select
+                                placeholder="Please Select a Driver"
+                                id="listedDriver{{ i }}"
+                                formControlName="listedDriver"
+                                (selectionChange)="updateLinkedDriver($event, i)"
+                                >
+                                <mat-option value="">Please Select</mat-option>
+                                <mat-option
+                                *ngFor="let driver of linkedDrivers"
+                                [value]="driver.firstName + driver.middleName + driver.lastName"
+                                >
+                                {{ driver.firstName + " " + driver.middleName + " " + driver.lastName }}
+                                </mat-option>
+                             </mat-select>
+                             <mat-error
+                                class=""
+                                id="listedDriverError{{ i }}"
+                                *ngIf="hasError('listedDriver', i, 'required')"
+                                >
+                                <em class="fas fa-exclamation-triangle pr-1"></em>
+                                   Please select a Driver
+                             </mat-error>
+                          </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-2 pl-0">
+                        </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+              <hr
+                 class="hr-divider"
+                 *ngIf="additionalDriverReport.length != i + 1"
+                 />
+           </div>
+        </div>
+        </mat-expansion-panel>
+        <!--US360772 -->
+        <mat-expansion-panel
+           hideToggle
+           [expanded]="true"
+           id="policyPanel"
+           class="bwr-mat-expansion-panel"
+           *ngIf = "householdMemberEnable()"
+           >
+           <mat-expansion-panel-header id="policyInfoHeaderPanel">
+              <mat-panel-title>
+                 <h5 class="bw-header5">Household Member Information</h5>
+                 <span class="material-icons open">arrow_drop_down</span>
+                 <span class="material-icons close">arrow_drop_up</span>
+              </mat-panel-title>
+           </mat-expansion-panel-header>
+           <div class="row">
+              <div class="col-md-4">
+                 <div class="row">
+                    <div class="col-md-10 col-10">
+                       <mat-form-field
+                          class="field-full-width bwr-dropdown mandatory-field"
+                          appearance="outline"
+                          >
+                          <mat-label>Number of Household Members</mat-label>
+                          <mat-select
+                             class="mandatory-field"
+                             placeholder="Number of Household Members"
+                             id="householdMember"
+                             formControlName="householdMember"
+                             >
+                             <mat-option
+                             *ngFor="let member of householdInfoObj.householdMember"
+                             [value]="member.key"
+                             >
+                             {{ member.displayvalue }}
+                             </mat-option>
+                          </mat-select>
+                          <mat-error
+                             class="mb-3"
+                             id="residenceReq"
+                             *ngIf="hasError('primaryResidence', 'null', 'required')"
+                             ><em class="fas fa-exclamation-triangle pr-1"></em> Primary
+                             Residence is required
+                          </mat-error
+                             >
+                       </mat-form-field>
+                    </div>
+                    <div class="col-md-2 col-2 pl-0">
+                     <mat-icon
+                     class="info-icon"
+                     aria-label="icon"
+                     id="householdMemberHelp"
+                     matTooltip="" 
+                     aria-label="Button that displays a tooltip when focused or hovered over"
+                     matTooltipClass="bwr-tooltip"
+                     (click)="loadHelpText('650')"
+                     >info</mat-icon
+                     >
+                    </div>
+                 </div>
+              </div>
+            </div>
+           </mat-expansion-panel>
+        
+     </mat-accordion>
+     <button
+        mat-raised-button
+        id="back"
+        class="btn btn-primary btn-next float-left"
+        (click)="onClickBack(policyInfoForm)"
+        >
+     <span>< Back</span>
+     </button>
+     <button
+        mat-raised-button
+        id="next" #next
+        class="btn btn-primary btn-next float-right"
+        (click)="onSubmit(policyInfoForm)"
+        >
+     <span>Next ></span>
+     </button>
+  </form>
+</div>

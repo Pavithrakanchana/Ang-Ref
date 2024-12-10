@@ -1,0 +1,72 @@
+<div mat-dialog-content>
+  <form class="vehicles-VINPrefill-form mb-4 pb-4" [formGroup]="vehicleVinprefixForm">
+    <mat-accordion>
+
+      <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Select any of the VIN listed below
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p><em>Please select closest matching VIN prefix or vehicle attributes.</em></p>
+        <mat-error mat-dialog-title class="mat-error m-0" id="vinReq"
+          *ngIf="vehicleVinprefixForm.controls['vin'].errors?.required && formSubmit"><em
+            class="fas fa-exclamation-triangle pr-1"></em>Select atleast one VIN </mat-error>
+        <div class="bwr-rates-form">
+          <mat-radio-group class="w-100 mandatory-field vin-radio-group" aria-label="Select an option" id="vinGroup"
+          formControlName="vin">
+          <table aria-describedby="table" mat-table [dataSource]="vinArrayObj" class="mat-elevation-z8">
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+                  <!-- Position Column -->
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef id="tableheader"> Select </th>
+              <td mat-cell *matCellDef="let element; let i = index"> 
+              
+                <mat-radio-button class="mr-5 click-area vin-radio-button" id="vin{{i}}" (change)="onVINSelect(i)"
+                        value={{element.vehicleModel.vehicleIdentificationNumberPrefix}}>
+                      </mat-radio-button>
+                    
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="vin">
+              <th id="vin" mat-header-cell *matHeaderCellDef> Vin </th>
+              <td mat-cell *matCellDef="let element"> {{element.vehicleModel.vehicleIdentificationNumberPrefix}} </td>
+            </ng-container>
+            <ng-container matColumnDef="cylinders">
+              <th id ="cylinders" mat-header-cell *matHeaderCellDef  class="mat-column-cycle">Engine Cycle </th>
+              <td mat-cell *matCellDef="let element" class="mat-column-cycle"> {{element.vehicleModel.cylinders || '-'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="fuel">
+              <th id="fuel" mat-header-cell *matHeaderCellDef  class="mat-column-fuel"> Fuel </th>
+              <td mat-cell *matCellDef="let element" class="mat-column-fuel"> {{element.vehicleModel.fuelDescription || '-'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="transmission">
+              <th id="transmission" mat-header-cell *matHeaderCellDef class="mat-column-transmission"> Transmission </th>
+              <td mat-cell *matCellDef="let element" class="mat-column-transmission"> {{element.transmissionDescription || '-'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="drive">
+              <th id="drive" mat-header-cell *matHeaderCellDef class="mat-column-driver">Drive </th>
+              <td mat-cell *matCellDef="let element" class="mat-column-driver"> {{element.vehicleModel.driveOption || '-'}} </td>
+            </ng-container>
+          </table>
+        </mat-radio-group>
+         
+        </div>
+
+
+      </mat-expansion-panel>
+      <button mat-button mat-raised-button id="continue" class="mt-1 btn btn-primary btn-next float-right"
+        cdkFocusInitial (click)="onSubmit(vehicleVinprefixForm.value)">
+        <span>Continue</span>
+      </button>
+
+      <button mat-button mat-raised-button id="cancel" class="mt-1 btn float-left" [mat-dialog-close]="true">
+        <span>Cancel</span>
+      </button>
+
+    </mat-accordion>
+  </form>
+</div>

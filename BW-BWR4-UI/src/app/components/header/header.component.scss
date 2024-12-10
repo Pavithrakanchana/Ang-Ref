@@ -1,0 +1,36 @@
+.logo {
+    height: 42px;
+    pointer-events: none;
+}
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: 50px;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    display: inline;
+  }
+  .example-spacer {
+    flex: 1 1 auto;
+  }
+  .mat-toolbar {
+    background-color: white !important;
+    font-size: 12px;
+    .mat-list-base {
+      padding-top: 0px;
+    }
+    .mat-list-item {
+        display: inline-block;
+        width: auto;
+        font-size: 14px;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .mat-icon {
+        font-size: 18px;
+    }
+  }

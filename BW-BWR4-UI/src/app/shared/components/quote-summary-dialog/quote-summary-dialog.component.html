@@ -1,0 +1,56 @@
+<h2 class="header" mat-dialog-title>Quote Summary - {{ quoteNumDisplayID }}</h2>
+ <div mat-dialog-content>
+   <div class="dialog-content">
+    <mat-card id="drivers" class="card-content">
+        <h3 class="subtitle">Drivers <mat-icon class="icon">person</mat-icon></h3>
+        <div class="row" *ngIf="hasDrivers">
+          <ul class="col col-md-12 col-xs-12 col-lg-6 col-sm-12" *ngFor="let driver of viewQuoteData?.autoQuote?.personalAuto?.drivers">
+            <li>{{driver.firstName}} {{driver.lastName}}</li>
+        </ul>
+        </div>
+        <div *ngIf="!hasDrivers">
+          No Drivers added yet on Quote!
+        </div>
+
+
+    </mat-card>
+    <mat-card id="vehicles" class="card-content">
+        <h3 class="subtitle">Vehicles<mat-icon class="icon"> directions_car</mat-icon></h3>
+        <div class="row" *ngIf="hasVehicles">
+          <ul class="col col-md-12 col-xs-12 col-lg-6 col-sm-12" *ngFor="let vehicle of viewQuoteData?.autoQuote?.personalAuto?.vehicles">
+            <li>{{vehicle.year}} {{vehicle.make}} {{vehicle.model}}</li>
+        </ul>
+        </div>
+        <div *ngIf="!hasVehicles">
+          No Vehicles added yet on Quote!
+        </div>
+    </mat-card>
+
+
+    <mat-card id="appliedDiscounts" class="card-content">
+      <h3 class="subtitle">Applied Discounts<mat-icon> local_offer</mat-icon></h3>
+      <div class="row" *ngIf="hasAppliedDiscounts">
+        <ul class="col col-md-12 col-xs-12 col-lg-6 col-sm-12" *ngFor="let discount of viewQuoteData?.autoQuote?.appliedPolicyDiscounts">
+          <li>{{discount.description}}</li>
+      </ul>
+
+      </div>
+      <div *ngIf="!hasAppliedDiscounts">
+        <p>No Discounts added yet on Quote!</p>
+      </div>
+
+     </mat-card>
+
+          <mat-card id="eligibleDiscounts" class="card-content">
+            <h3 class="subtitle">Eligible Discounts</h3>
+              <div class="row">
+            <ul class="col col-md-12 col-xs-12 col-lg-6 col-sm-12" *ngFor="let discount of filteredEligibleDiscount">
+                <li>{{discount.displayvalue}}</li>
+            </ul>
+            </div>
+          </mat-card>
+            </div>
+ </div>
+ <div mat-dialog-actions>  
+    <button mb-2 mat-button mat-dialog-close cdkFocusInitial style="background-color: #025aaa;color: #fff">Close</button>
+ </div>

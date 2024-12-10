@@ -1,0 +1,195 @@
+
+<div class="confirmation-container" id="topcontent">
+    <div class="d-flex justify-content-center" *ngIf="showSpinner">
+        <div class="spinner-border" role="status">
+            <span class="sr-only" id="loading"></span>
+        </div>
+    </div>
+
+    <app-messages>{{ errorMessage }}</app-messages>
+
+    <div class="alert alert-primary d-flex align-items-center" role="alert" *ngIf="infoMessage">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+            <use xlink:href="#info-fill" />
+        </svg>
+        <div class="pl-2">{{ infoMessage }}</div>
+    </div>
+    <div id="confirmation-page">
+        <div class="title">
+            <h5 class="bw-header5">Upload Confirmation Receipt</h5>
+        </div>
+
+        <p class="mt-1" style="text-align: center;">This receipt confirms that the upload transaction was successful.
+        </p>
+
+        <form class="confirmation-form">
+            <mat-accordion [multi]="true">
+                    <div class="row col-sm-12 ml-0 printDiv">
+                        <div class="col-sm-4 printlink">
+                            <a class="btn print" mat-link href="javascript:void(0)" (click)="printConfirmationReceipt()">Print
+                                Confirmation Receipt</a>
+                        </div>
+                        <div class="col-sm-3 printlink">
+                            <a class="btn print" mat-link href="javascript:void(0)" (click)="printPackage('NB')">Print
+                                New Business Package</a>
+                        </div>
+                        <div class="col-sm-3 printlink">
+                            <a class="btn print" mat-link href="javascript:void(0)" (click)="printApplicationPackage()">Print
+                                Application</a>
+                        </div>
+                    </div>
+                <!-- Client Information -->
+                <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="hovHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5">Client Information</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row col-12 mb-3">
+                        <div class="col col-6 ml-0 pl-0">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"> <strong class="pl-2">Client Name:</strong></span>
+                                </div>
+                                <div class="col-6">{{confirmationData?.contact.person.lastName}},&nbsp;{{confirmationData?.contact.person.firstName}}</div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"> <strong class="pl-2">Producer
+                                            Code:</strong></span>
+                                </div>
+                                <div class="col-6" *ngFor = "let data of confirmationData?.agents"> {{data.agentCode}} </div>
+                            </div>
+                        </div>
+                        <div class="col col-6 ml-0 pl-0">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Producer Name:
+                                </strong></span>
+                                </div>
+                                <div class="col-6" *ngFor = "let data of confirmationData?.agents"> {{data.firstName}} </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Policy Number:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{this.bindPolicyNumber}} </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+                <!-- Payment Information -->
+                <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="hovHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5">Payment Information</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row col-12">
+                        <div class="col col-6 ml-0 pl-0">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"> <strong class="pl-2">Amount: </strong></span>
+                                </div>
+                                <div class="col-6"> {{'$' + bindData.amountPaid}} </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"> <strong class="pl-2">Payment
+                                            Date:</strong></span>
+                                </div>
+                                <div class="col-6"> {{bindData.uploadDate}} </div>
+                            </div>
+                        </div>
+                        <div class="col col-6 ml-0 pl-0">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Payment Type:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{paymentMethod}} </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Payment Time:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{bindData.uploadTime}} </div>
+                            </div>
+                        </div>
+                        <span class="mt-4 mb-2">Producer Note: {{producerNote}}</span>
+                    </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="hovHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5">Upload Verification</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row col-12">
+                        <div class="col col-6 ml-0 pl-0">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Upload Date:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{bindData.uploadDate}} </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">User ID:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{ producerUserId }} </div>
+                            </div>
+                        </div>
+                        <div class="col col-6 ml-0 pl-0 mb-2">
+                            <div class="row">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Upload Time:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{bindData.uploadTime}} </div>
+                            </div>
+                            <div class="row mt-2 ">
+                                <div class="col-6"><span  class="lblTxt" style="display: block"><strong class="pl-2">Confirmation #:
+                                </strong></span>
+                                </div>
+                                <div class="col-6"> {{bindData.confirmationNum}} </div>
+                            </div>
+                        </div>
+                    </div>                </mat-expansion-panel>
+                <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="hovHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5"> Important Messages</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row col-12" *ngIf="!eSignature && fullfillmentAgent === 'N' &&  state != 'NJ'">
+                        <span class="mb-2">THE APPLICATION MUST BE PRINTED AND SIGNED BY THE APPLICANT. A COPY SHOULD BE PROVIDED TO THE APPLICANT, AND ANOTHER COPY,ALONG WITH OTHER REQUIRED DOCUMENTS SHOULD BE RETAINED IN YOUR OFFICE FOR A MINIMUM OF SEVEN YEARS.</span>
+                        <span class="mb-2 warning">YOU MUST PROVIDE THE CUSTOMER WITH THE NEW BUSINESS PACKAGE AND POLICY CONTRACT.</span>
+                    </div>
+                    <div class="row col-12" *ngIf="!eSignature && fullfillmentAgent === 'N' &&  state === 'NJ'">
+                        <span class="mb-2">THE APPLICATION MUST BE PRINTED AND SIGNED BY THE APPLICANT. A COPY SHOULD BE PROVIDED TO THE APPLICANT, AND ANOTHER COPY,ALONG WITH OTHER REQUIRED DOCUMENTS SHOULD BE RETAINED IN YOUR OFFICE FOR A MINIMUM OF SEVEN YEARS.</span>
+                        <span class="mb-2 warning">YOU MUST PROVIDE THE CUSTOMER WITH THE POLICY CONTRACT.</span>
+                    </div>
+                    <div class="row col-12" *ngIf="!eSignature && fullfillmentAgent === 'Y'">
+                        <span class="mb-2">THE APPLICATION MUST BE PRINTED AND SIGNED BY THE APPLICANT. YOU ARE RESPONSIBLE FOR COLLECTING ALL REQUIRED DOCUMENTS INCLUDING ALL FORMS REQUIRING THE INSURED SIGNATURE. ALL REQUIRED DOCUMENTS NEED TO BE RETAINED IN YOUR OFFICE FOR A MINIMUM OF SEVEN YEARS. A COPY OF THE SIGNED APPLICATION AND OTHER SIGNED FORM SHOULD BE PROVIDED TO THE APPLICANT.</span>
+                        <span class="mb-2">THE APPLICANT WILL BE MAILED THE NEW BUSINESS PACKAGE FORMS, ALONG WITH A POLICY CONTRACT.</span>
+                    </div>
+                    <div class="row col-12" *ngIf="eSignature && fullfillmentAgent === 'N'">
+                        <span class="mb-2">THE APPLICATION AND OTHER REQUIRED FORMS MUST BE ELECTRONICALLY SIGNED BY THE CUSTOMER THROUGH THE ESIGNATURE PROCESS. YOU ARE RESPONSIBLE FOR THE SUCCESSFUL COMPLETION OF SIGNATURE FORMS. POLICIES PENDING COMPLETION OF THE ESIGNATURE PROCESS ARE AVAILABLE IN POLICY ALERTS UNDER MANAGE MY CUSTOMER.</span>
+                        <span class="mb-2 warning">YOU MUST PROVIDE THE CUSTOMER WITH THE NEW BUSINESS PACKAGE AND POLICY CONTRACT.</span>
+                    </div>
+                    <div class="row col-12" *ngIf="eSignature && fullfillmentAgent === 'Y'">
+                        <span class="mb-2">THE APPLICATION AND OTHER REQUIRED FORMS WILL BE ELECTRONICALLY SIGNED BY THE CUSTOMER THROUGH OUR ESIGNATURE PROCESS.</span>
+                        <span class="mb-2">THE CUSTOMER WILL BE MAILED THE NEW BUSINESS PACKAGE FORMS, ALONG WITH A POLICY CONTRACT.</span>
+                    </div>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+            <div class="reminder"><span class="mb-2">Reminder - Always include the Fax Cover Sheet when you fax in proof of documents in order to ensure timely processing. The Fax Cover Sheet is the first page in the Application Package.</span></div>
+            <div style="text-align: right;">
+            <a href="javascript:void(0);" (click) ="returnToQuote()">Return to Quote Search</a></div>
+        </form>
+    </div>
+</div>
+

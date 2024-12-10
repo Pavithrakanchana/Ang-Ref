@@ -1,0 +1,443 @@
+<!-- us292810_premium_payplan_section-->
+<div class="coverages-container" id="topcontent">
+   <h2 class="bw-header3 coverages">Application</h2>
+   <div class="d-flex justify-content-center" *ngIf="showSpinner">
+      <div class="spinner-border" role="status">
+         <span class="sr-only" id="loading"></span>
+      </div>
+   </div>
+
+   <!-- App Errors -->
+      <app-messages [ngStyle] = "{visibility: losspayeepopupopened ? 'hidden' : 'visible'}">{{ errorMessage }}</app-messages>
+
+   <div class="alert alert-primary d-flex align-items-center" role="alert" *ngIf="infoMessage">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+         <use xlink:href="#info-fill" />
+      </svg>
+      <div class="pl-2">{{ infoMessage }}</div>
+   </div>
+   <form class="application-form" [formGroup]="applicationForm">
+      <!-- Premium Section -->
+      <div class="row">
+         <div *ngFor="let package of policyPackage" class="col col-md-6 col-xs-12 col-lg-6 col-sm-6">
+            <app-premium [totalPremium]="package.autoCoverages.premiumDetails[0].savingsAmount.theCurrencyAmount">
+            </app-premium>
+         </div>
+         <div class="col col-md-6 col-xs-12 col-lg-6 col-sm-6">
+            <div class="" *ngIf="recalculateStatus">
+               <button mat-raised-button class="add-btn float-right" id="recalculateBtn" (click)="recalculate('POSTCall', applicationForm)">
+                  RECALCULATE
+               </button>
+            </div>
+         </div>
+      </div>
+      <mat-accordion [multi]="true">
+         <!-- Pay Plan Component-->
+         <div *ngFor="let package of policyPackage">
+            <app-payplans (clickHandler)="recalculate('payplan', applicationForm)"
+               [payplans]="package.autoCoverages.payplansDetails"
+               [selectPayPlanCode]="this.selectPayPlanCode" [package]="package.autoCoverages.packageType"
+               [form]="applicationForm"
+               [fees]="package.policyFees"  [underWritingFees]="package.underwritingFees!"></app-payplans>
+         </div>
+
+         <!-- Payment method componenent -->
+         <mat-expansion-panel hideToggle [expanded]="true" id="policyPanel" class="bwr-mat-expansion-panel">
+            <mat-expansion-panel-header id="policyInfoHeaderPanel">
+               <mat-panel-title>
+                  <h5 class="bw-header5">Policy Level Discounts</h5>
+                  <span class="material-icons open">arrow_drop_down</span>
+                  <span class="material-icons close">arrow_drop_up</span>
+               </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-payment-methods *ngIf="this.valuesLoaded === true" [page]="page" [formRef]="applicationForm"
+               (payMethodChangeEvent)="checkPayMethodChange($event)" [downpaymentValue]="this.downpaymentValue"
+               [installmentValue]="this.eftFutureInstallValue" [hasProducerSweep]="this.hasProducerSweep"></app-payment-methods>
+         </mat-expansion-panel>
+         <!-- Producer Information Section -->
+         <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel pay-plan-panel">
+            <mat-expansion-panel-header id="hovHeaderPanel">
+
+               <mat-panel-title>
+                  <h5 class="bw-header5">Producer Information</h5>
+                  <span class="material-icons open">arrow_drop_down</span>
+                  <span class="material-icons close">arrow_drop_up</span>
+               </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="row">
+               <div class="col-7"> Please select an authorized producer from the list below to complete the application
+               </div>
+               <div class="col-6">
+                  <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                     <mat-label>Producer Name</mat-label>
+                     <mat-select placeholder="Producer Name" id="producerName" formControlName="producerName">
+                        <mat-option value="">Please Select</mat-option>
+                        <mat-option *ngFor="let producername of producerDropDownData" [value]="producername.uniqueID">
+                           {{ producername.firstName + ' ' + producername.lastName }}
+                        </mat-option>
+                     </mat-select>
+                     <mat-error class="" id="producerReq" *ngIf="hasError('producerName','required', 'null', 'null')">
+                        <em class="fas fa-exclamation-triangle pr-1"></em>Producer Name is required
+                     </mat-error>
+                  </mat-form-field>
+                  <span>Not Listed? <a href="javascript:void(0);" (click)="producerPopup()">Click Here</a> to add a
+                     producer's name</span>
+               </div>
+            </div>
+         </mat-expansion-panel>
+         <!-- Named Insured Information Section -->
+         <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel pay-plan-panel">
+            <mat-expansion-panel-header id="hovHeaderPanel">
+               <mat-panel-title>
+                  <h5 class="bw-header5">Named Insured Information</h5>
+                  <span class="material-icons open">arrow_drop_down</span>
+                  <span class="material-icons close">arrow_drop_up</span>
+               </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="row">
+               <div class="col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                      <div class="row">
+                          <div class="col-md-10 col-10">
+                                <mat-form-field class="field-full-width" [class.mandatory-field] = "this.goPaperLessIndicator || this.esignIndicator" [ngClass]="{'mandatory-field' : this.goPaperLessIndicator === true || this.esignIndicator === true}"
+                                   appearance="outline">
+                                   <mat-label>Named Insured Email Address</mat-label>
+                                   <input matInput placeholder="Named Insured Email Address" (blur)="trimSpace('email')" value="" id="email"
+                                      formControlName="email">
+                                   <mat-error class=" " id="emailReq" *ngIf="hasError('email', 'required', 'null', 'null')"><em
+                                         class="fas fa-exclamation-triangle pr-1"></em> Named Insured Email Address is required
+                                   </mat-error>
+                                   <mat-error class=" " id="emailPat" *ngIf="hasError('email', 'pattern', 'null', 'null')"><em
+                                         class="fas fa-exclamation-triangle pr-1"></em> A valid e-mail address must be entered
+                                   </mat-error>
+                                </mat-form-field>
+                          </div>
+                          <div class="col-md-2 col-2 pl-0">
+                              <mat-icon class="info-icon" id="emailHelp" aria-label="icon" matTooltip=""
+                                   aria-label="Button that displays a tooltip when focused or hovered over"
+                                   matTooltipClass="bwr-tooltip" (click)="loadHelpText('86')">info</mat-icon>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                          <div class="col-md-10 col-10">
+                                         <mat-form-field class="field-full-width mandatory-field" appearance="outline">
+                                   <mat-label>Phone Number</mat-label>
+                                   <input matInput placeholder="xxx-xxx-xxxx" value="" (keyup)="trimSpace('phone')" minlength="12" maxlength="12" id="phone"
+                                   [preValue]="applicationForm.value.phone" [phoneControl]="applicationForm.controls['phone']" formControlName="phone" appPhoneFormat>
+                                   <mat-error class=" " id="phoneReq" *ngIf="hasError('phone', 'required', 'null', 'null')">
+                                      <em class="fas fa-exclamation-triangle pr-1"></em> Phone is required
+                                   </mat-error>
+                                   <mat-error class=" " id="phoneValid"
+                                      *ngIf="!hasError('phone', 'required', 'null', 'null') && applicationForm.controls.phone.invalid && (applicationForm.controls.phone.dirty || applicationForm.controls.phone.touched)">
+                                      Phone is not valid
+                                   </mat-error>
+                                </mat-form-field>
+                       </div>
+                    </div>
+                   </div>
+            <div class="row">
+               <div class="col-3">
+                  <mat-form-field class="field-full-width bwr-dropdown " appearance="outline">
+                     <mat-label>Additional Named Insured</mat-label>
+                     <mat-select placeholder="Additional Named Insured" id="additionalNamedInsured"
+                        formControlName="additionalNamedInsured">
+                        <mat-option value='None' selected>None</mat-option>
+                        <mat-option *ngFor="let driver of additonalNamedInsureds" [value]="driver.sequenceNumber">
+                           {{ driver.firstName + " " + driver.middleName + " " + driver.lastName }}
+                        </mat-option>
+                     </mat-select>
+                  </mat-form-field>
+
+               </div>
+               <div class="col-3"></div>
+               <div class="col-3"></div>
+               <div class="col-3"></div>
+            </div>
+            <div class="row d-flex align-items-center">
+               <div class="col col-3 col-lg-3 col-sm-12">
+                  <mat-radio-group aria-label="Select an option" id="textAlerts" formControlName="textAlerts"
+                     (change)="onTextAlertsChange($event.value)">
+                     <div class="row">
+                        <div class="col col-12 col-sm-12">Text Alerts
+                           <mat-icon class="info-icon" id="emailHelp" aria-label="icon" matTooltip=""
+                           aria-label="" matTooltipClass="bwr-tooltip" (click)="loadHelpText('645')">info</mat-icon>
+                        </div>
+
+                        <div class="col col-7 col-sm-9">
+                           <div class="row">
+                              <div class="col-md-12">
+                              &nbsp;
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col  col-lg-6 col-sm-2 col-6 pr-1">
+                                 <mat-radio-button value="1">Yes</mat-radio-button>
+                              </div>
+                              <div class="col col-lg-4 col-sm-2 col-4">
+                                 <mat-radio-button value="0">No</mat-radio-button>
+                              </div>
+
+                           </div>
+
+                        </div>
+                     </div>
+                  </mat-radio-group>
+
+               </div>
+
+               <div class="col-3" *ngIf="this.showTextAlertMessage === true">
+                  <mat-form-field class="field-full-width"
+                     [ngClass]="{'mandatory-field' : this.showTextAlertMessage === true}" appearance="outline">
+                     <mat-label>Mobile Phone Number (1)</mat-label>
+                     <input matInput placeholder="xxx-xxx-xxxx" value="" minlength="12" maxlength="12" id="mobilePhone1"
+                     [preValue]="applicationForm.value.mobilePhone1" [phoneControl]="applicationForm.controls['mobilePhone1']" formControlName="mobilePhone1" appPhoneFormat>
+                           <mat-error class=" " id="mobilePhone1"
+                           *ngIf="!hasError('mobilePhone1', 'required', 'null', 'null') && applicationForm.controls.mobilePhone1.invalid && (applicationForm.controls.mobilePhone1.dirty || applicationForm.controls.mobilePhone1.touched)">
+                           Mobile Phone is not valid
+                        </mat-error>
+                  </mat-form-field>
+
+               </div>
+               <div class="col col-lg-3 col-3 col-sm-4" *ngIf="this.showTextAlertMessage === true">
+                  <mat-form-field class="field-full-width" appearance="outline">
+                     <mat-label>Mobile Phone Number (2)</mat-label>
+                     <input matInput placeholder="xxx-xxx-xxxx" value="" minlength="12" maxlength="12" id="mobilePhone2"
+                     [preValue]="applicationForm.value.mobilePhone2" [phoneControl]="applicationForm.controls['mobilePhone2']" formControlName="mobilePhone2" appPhoneFormat>
+                        <mat-error class=" " id="mobilePhone2"
+                           *ngIf="!hasError('mobilePhone2', 'required', 'null', 'null') && applicationForm.controls.mobilePhone2.invalid && (applicationForm.controls.mobilePhone2.dirty || applicationForm.controls.mobilePhone2.touched)">
+                           Mobile Phone is not valid
+                        </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col col-lg-3 col-3 col-sm-4" *ngIf="this.showTextAlertMessage === true">
+                  <mat-form-field class="field-full-width" appearance="outline">
+                     <mat-label>Mobile Phone Number (3)</mat-label>
+                     <input matInput placeholder="xxx-xxx-xxxx" value="" minlength="12" maxlength="12" id="mobilePhone3"
+                     [preValue]="applicationForm.value.mobilePhone3" [phoneControl]="applicationForm.controls['mobilePhone3']" formControlName="mobilePhone3" appPhoneFormat>
+                        <mat-error class=" " id="mobilePhone3"
+                           *ngIf="!hasError('mobilePhone3', 'required', 'null', 'null') && applicationForm.controls.mobilePhone3.invalid && (applicationForm.controls.mobilePhone3.dirty || applicationForm.controls.mobilePhone3.touched)">
+                           Mobile Phone is not valid
+                        </mat-error>
+                  </mat-form-field>
+               </div>
+
+            </div>
+            <div class="row">
+            <div class=" col-12  message-text" *ngIf="this.showTextAlertMessage === true">
+               {{ this.textAlertDisclaimer }}
+               <br/>&nbsp;
+            </div>
+            </div>
+            <div class="row">
+               <div class="col-12 message-text" *ngIf="this.showTextAlertMessage === true">
+                  <p>Important Note:</p>
+                  <p>The phone number(s) entered must support text messaging. Message and Data rates May Apply. Text STOP to 41637 to opt out. Text HELP to 41637
+                     for help. Please review our <a href="https://www.bristolwest.com/home/terms" target="_blank" rel="noopener">Terms
+                        and Conditions</a>&nbsp;and<a href="https://www.farmers.com/privacy-statement/#personaluse"
+                        target="_blank">&nbsp;Privacy
+                        Policy</a>&nbsp;for more information.</p>
+               </div>
+            </div>
+
+
+         </mat-expansion-panel>
+         <!-- Follow Up Information & Discounts Section -->
+         <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel" class="bwr-mat-expansion-panel pay-plan-panel">
+            <mat-expansion-panel-header id="hovHeaderPanel">
+               <mat-panel-title>
+                  <h5 class="bw-header5">Follow Up Information & Discounts</h5>
+                  <span class="material-icons open">arrow_drop_down</span>
+                  <span class="material-icons close">arrow_drop_up</span>
+               </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="multi-policy-section-rows">
+               <div class="table-div" *ngIf="!multiPolicySelected">
+                  <div class="row row-header mt-2">
+                     <div class="col col-3 col-lg-3"><strong>Multi Policy Type(s)</strong></div>
+                     <div class="col col-3 col-lg-3"><strong>Policy Number(s)</strong></div>
+                     <div class="col col-3 col-lg-3"></div>
+                  </div>
+                  <div formArrayName="multipolicyDiscounts">
+                     <div class="row row-body mt-3" *ngFor="let refPolicy of referencePolicies; index as m" id="{{m}}"
+                        [formGroupName]="m">
+                        <div class="col col-3 col-lg-3">
+                           <label class="mt-3">{{refPolicy.lineOfBusiness}}</label>
+                        </div>
+                        <div class="col col-3 col-lg-3">
+                           <mat-form-field class="field-full-width" appearance="outline">
+                              <mat-label>Policy Number</mat-label>
+                              <input matInput placeholder="Policy Number" (keydown.space)="$event.preventDefault()" value="{{refPolicy.policyNumber}}" maxlength="10" id="policyNumber{{m}}"
+                                  formControlName="policyNumber">
+                          </mat-form-field>
+                        </div>
+                        <div class="col col-3 col-lg-3" *ngIf="refPolicy.lineOfBusiness === 'Other'">
+                           <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                              <mat-label>Other Policy Type</mat-label>
+                              <mat-select placeholder="Other Policy Type" id="otherPolicyType{{m}}"
+                                 formControlName="policyType" required="refPolicy.lineOfBusiness === 'Other'">
+                                 <mat-option value="">Please Select</mat-option>
+                                 <mat-option class="group-option" value="BRISTL WEST COMMERCIAL" (onSelectionChange)="optionSelected($event, 'BRISTOLWEST', m)">Bristol West Commercial</mat-option>
+                                 <mat-optgroup *ngFor="let type of applicationDetails.otherPolicyTypes" class = "bolded-label-ng-deep" [label]="type.label">
+                                    <mat-option *ngFor="let option of type.options" [value]="option.key.trim()"
+                                       (onSelectionChange)="optionSelected($event, type.label, m)">
+                                       {{option.displayvalue}}</mat-option>
+                                 </mat-optgroup>
+                              </mat-select>
+                              <mat-error class=" " id="otherPolicyTypeReq{{m}}"
+                                 *ngIf="hasError('policyType', 'required', m, 'multipolicyDiscounts')">
+                                 <em class="fas fa-exclamation-triangle pr-1"></em>Other Policy Type is required
+                              </mat-error>
+                           </mat-form-field>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row mt-3">
+               <div class="col-12">
+                  <mat-radio-group aria-label="Select an option" id="goPaperlessDiscount"
+                     formControlName="goPaperlessDiscount" (change)="onGoPaperLessChange($event)">
+                     <div class="row">
+                        <div class="col col-3 col-sm-3">Go Paperless Discount?
+                           <img
+                              class="logo piggy-icon"
+                              src="assets/img/piggy.svg"
+                              id="piggyIcon"
+                              alt="piggy" (click)="loadHelpText('113')"
+                              />
+                        </div>
+
+                        <div class="col col-7 col-sm-9">
+                           <div class="row">
+                              <div class="col   col-2 pr-1">
+                                 <mat-radio-button value="1">Yes</mat-radio-button>
+                              </div>
+                              <div class="col  col-2">
+                                 <mat-radio-button value="0">No</mat-radio-button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </mat-radio-group>
+               </div>
+            </div>
+            <div class="table-div">
+               <div formArrayName="fdl">
+                  <div class="row row-body mt-3" *ngFor="let fdlDriver of fdlDriverList; let j = index"
+                     [formGroupName]="j">
+                     <div class="col col-3 col-lg-3"><label class="mt-3">{{fdlDriver.firstName + ' ' +
+                           fdlDriver.lastName}}</label></div>
+                     <div class="col col-3 col-lg-3">
+                        <input formControlName="driverId" [value]="fdlDriver.sequenceNumber" class="display-none">
+                        <mat-form-field class="field-full-width bwr-dropdown mandatory-field" appearance="outline">
+                           <mat-label>Country Issuing License</mat-label>
+                           <mat-select placeholder="Country Issuing License" id="countryIssuingLicense{{j}}"
+                              formControlName="countryIssuingLicense">
+                              <mat-option value="" aria-selected="true" value="">Please Select</mat-option>
+                              <mat-option *ngFor="let country of this.sortedCountries" value="{{country.key}}">
+                                 {{country.displayvalue}}
+                              </mat-option>
+                           </mat-select>
+                           <mat-error class="" id="countryIssuingLicenseReq{{j}}"
+                              *ngIf="hasError('countryIssuingLicense', 'required', j, 'fdl')">
+                              Country Issuing License is required
+                           </mat-error>
+                        </mat-form-field>
+
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </mat-expansion-panel>
+         <!-- Vehicles Section -->
+         <!-- Vehicle Information Section -->
+         <div *ngFor="let vehicle of vehicles; let i=index">
+            <div formArrayName="vehicles">
+               <mat-expansion-panel hideToggle [expanded]="true" id="hovPanel{{i}}"
+                  class="bwr-mat-expansion-panel pay-plan-panel">
+                  <mat-expansion-panel-header id="hovHeaderPanel">
+                     <mat-panel-title>
+                        <h5 *ngIf="!this.nonOwner" class="bw-header5">{{i+1}}. {{vehicle.vin}}
+                           {{vehicle.year}} {{vehicle.make}} {{vehicle.model}} - {{vehicle.theCurrencyAmount |
+                           currency:'USD':'symbol-narrow':'0.2-2'}}</h5>
+
+                        <h5 *ngIf="this.nonOwner" class="bw-header5">{{boardFormOrNNO}}</h5>
+                        <span class="material-icons open">arrow_drop_down</span>
+                        <span class="material-icons close">arrow_drop_up</span>
+                     </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="garaging-address-content">
+                     <label class="font-weight-500">
+                        Vehicle Garaging Address
+                        <mat-icon class="info-icon" aria-label="icon" id="maritalStatusHelp" matTooltip="" aria-label="Button that displays a tooltip when focused or hovered over"
+matTooltipClass="bwr-tooltip" (click)="loadHelpText('29')">info</mat-icon>
+                     </label>
+                     <app-address [addressForm]="this.vehiclesFormGroup(i)" [address]="vehicle.garageAddress" ></app-address>
+                  </div>
+
+                  <ng-container *ngIf="vehicleHasCompNColl(vehicle.coverages)">
+                  <hr class="pb-2">
+                  <div [formGroupName]="i" class="losspayee-content">
+
+                      <label class="font-weight-500">
+                        Loss Payee & Additional Interest Information
+                     </label>
+                     <div mat-raised-button class="add-btn ml-1 mb-3" *ngIf="vehicle.addionalInterests?.length !== 2" id="addNew{{i}}"
+                        (click)="addLienholder(i, 'add')">
+                         Add Loss Payee / Additional Interest
+                     </div>
+                     <div class="table-div">
+                        <div class="row row-header mb-2 pb-3" *ngIf="vehicle.addionalInterests">
+                           <div class="col col-1 col-lg-1 col-sm-1 font-weight-500">Type</div>
+                           <div class="col col-1 col-lg-1  col-sm-1 font-weight-500">Name</div>
+                           <div class="col col-5 col-lg-6  col-sm-7 font-weight-500">Address</div>
+                           <div class="col col-2 col-lg-2  col-sm-3"></div>
+                        </div>
+                        <div formArrayName="addionalInterests">
+                           <div class="row row-body" *ngFor="let lienholder of vehicle.addionalInterests; let v = index"
+                              [formGroupName]="v">
+                              <div class="col col-1 col-lg-1 col-sm-1">{{lienholder.type === "AI" ? "Additional
+                                 Interest" : "Loss Payee"}}</div>
+                              <div class="col col-1 col-lg-1 col-sm-1">{{lienholder.type === 'AI' ? lienholder.firstName
+                                 + ' ' + lienholder.lastName : lienholder.institutionName}}</div>
+                              <div class="col col-5 col-lg-6 col-sm-7">{{lienholder.addresses[0].streetName + ' ' +
+                                 lienholder.addresses[0].city + ' ' + lienholder.addresses[0].state + ' ' +
+                                 lienholder.addresses[0].postalCode}}</div>
+                              <div class="col col-2 col-lg-2 col-sm-3">
+                                 <div class="row">
+                                    <div class="col-6 col-sm-3 col-lg-4 mr-3">
+                                       <button mat-icon-button id="editViolation{{i}}{{v}}" class="icon-button"
+                                          (click)="editLienholder(i, v)">
+                                          <mat-icon>mode</mat-icon>Edit
+                                       </button>
+                                    </div>
+                                    <div class="col-6 col-sm-3 col-lg-4">
+                                       <button mat-icon-button id="deleteViolation{{i}}{{v}}" class="icon-button"
+                                          (click)="removeLienholder(i, v)">
+                                          <mat-icon>delete</mat-icon>Delete
+                                       </button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                </ng-container>
+               </mat-expansion-panel>
+            </div>
+         </div>
+      </mat-accordion>
+      <!-- Footer Section-->
+      <div class="footer-buttons pt-4 pb-4">
+         <button id="back" class="btn btn-primary btn-next float-left" (click)="onClickBack(applicationForm)">
+            <span>
+               &lt; Back</span>
+         </button>
+         <button mat-raised-button id="next" #next class="btn btn-primary btn-next float-right"
+            (click)="onSubmit(applicationForm, 'next')">
+            <span>Next &gt;</span>
+         </button>
+      </div>
+   </form>
+</div>

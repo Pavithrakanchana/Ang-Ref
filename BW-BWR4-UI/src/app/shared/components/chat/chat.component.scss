@@ -1,0 +1,10 @@
+#chatbutton {
+    display: block;
+    position: absolute;
+    z-index: 0;
+}
+#chatbutton.chatbutton_top_right {
+  right: 1%;
+  top: 0.8%;    
+ // background: #2db318;
+}

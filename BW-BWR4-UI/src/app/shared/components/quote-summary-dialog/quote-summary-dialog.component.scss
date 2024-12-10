@@ -1,0 +1,43 @@
+::ng-deep .full-width-dialog .mat-dialog-container {
+  padding: 0px !important;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+::ng-deep .mat-dialog-actions {
+  border-top: 1px solid #ebe7e7;
+  padding: 3px;
+  margin-bottom: -5px;
+}
+// ::ng-deep .mat-button-base {
+//   // background-color: #025aaa;
+//   margin-bottom: 20px;
+//   margin-left: 24px;
+//   // color: #fff;
+// }
+.header {
+  background-color: #025aaa;
+  color: #fff;
+  padding: 7px 24px 7px 24px;
+  margin-top: 0px;
+  //   margin-bottom: 2px;
+}
+.dialog-content {
+  padding: 5px 24px 24px 24px;
+}
+.card-content {
+  margin-bottom: 10px;
+  box-shadow: 1px 2px 4px 2px #cbcbcb;
+  padding: 2px 8px 5px 8px;
+  .subtitle {
+    color: #025aaa;
+    .icon {
+      padding-left: 3px;
+    }
+  }
+  ul {
+    margin: 0px;
+  }
+  li {
+    margin-left: 18px;
+  }
+}

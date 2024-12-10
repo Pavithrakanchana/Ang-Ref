@@ -1,0 +1,230 @@
+$bwr-theme-background-color: linear-gradient(0deg, rgba(21, 143, 239, 0.1), rgba(21, 143, 239, 0.1)), rgba(21, 143, 239, 0.1);
+$bwr-theme-color: #025AAA;
+$bwr-background-color: #fff;
+$bwr-font-color: #000;
+$body-font-size: 14px;
+
+.container {
+    width: 100%;
+}
+
+ul.progress-bar-number {
+    counter-reset: step;
+    padding-left: 0px;
+    padding-top: 15px;
+
+    li {
+        list-style-type: none;
+        // float:left;        
+        width: 100%;
+        position: relative;
+        text-align: left;
+        z-index: 0;
+        span {
+            color: #585858;
+            margin-left: 40px;
+            position: relative;
+            top: -15px;
+            font-size: 14px;
+        }
+    }
+
+    li:before {
+        content: counter(step);
+        counter-increment: step;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border: 1px solid #E7E7E7;
+        display: block;
+        text-align: center;
+        margin-bottom: -5px !important;
+        border-radius: 50%;
+        background-color: #E7E7E7;
+        color: #585858;
+        font-size: 11px;
+    }
+
+    li.active {
+        cursor: pointer;
+        span {
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        &:before {
+            background-color: $bwr-theme-color;
+            border-color: $bwr-theme-color;
+            color: #fff;
+        }
+    }
+
+    li.activated {
+        color: #fff;
+        span {
+            color: #0073CF;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        &:before {
+            content: "\2713";
+            background-color: $bwr-theme-color;
+            border-color: $bwr-theme-color;
+            color: #fff;
+        }
+
+        &:after {
+            border: 1px solid $bwr-theme-color;
+        }
+    }
+
+    li.current-page {
+        span {
+            color: #000 !important;
+            font-weight: bold;
+        }
+
+        &:before {
+            background-color: $bwr-theme-color;
+            border-color: $bwr-theme-color;
+            color: #fff;
+        }
+    }
+
+    li:after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 45%;
+        border: 1px solid #E7E7E7;
+        top: 20px;
+        left: 10px;
+        background-color: #000;
+        z-index: -1;
+    }
+
+    li:last-child:after {
+        content: none;
+    }
+
+    li:focus {
+        outline: -webkit-focus-ring-color auto 0px;
+    }
+
+}
+
+@media only screen and (min-width : 1600px),
+(min-width : 1900px),
+(min-height : 1000px) {
+
+    ul.progress-bar-number {
+        font-size: 8em;
+        counter-reset: step;
+        padding-left: 0px;
+        padding-top: 15px;
+
+        li {
+            list-style-type: none;
+            // float:left;        
+            width: 100%;
+            position: relative;
+            text-align: left;
+            z-index: 0;
+            span {
+                color: #585858;
+                margin-left: 40px;
+                position: relative;
+                top: -45px;
+                font-size: 17px;
+            }
+        }
+
+        li:before {
+            content: counter(step);
+            counter-increment: step;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            border: 1px solid #E7E7E7;
+            display: block;
+            text-align: center;
+            margin-bottom: -10px !important;
+            border-radius: 50%;
+            background-color: #E7E7E7;
+            color: #585858;
+            font-size: 11px;
+        }
+
+        li.active {
+            span {
+                color: #000 !important;
+                font-weight: bold;
+            }
+
+            &:before {
+                background-color: $bwr-theme-color;
+                border-color: $bwr-theme-color;
+                color: #fff;
+            }
+        }
+
+        li.activated {
+            color: #fff;
+            span {
+                color: #0073CF;
+                cursor: pointer;
+            }
+
+            &:before {
+                content: "\2713";
+                background-color: $bwr-theme-color;
+                border-color: $bwr-theme-color;
+                color: #fff;
+            }
+
+            &:after {
+                border: 1px solid $bwr-theme-color;
+            }
+        }
+
+        li.current-page {
+            span {
+                color: #000 !important;
+                font-weight: bold;
+            }
+
+            &:before {
+                background-color: $bwr-theme-color;
+                border-color: $bwr-theme-color;
+                color: #fff;
+            }
+        }
+
+        li:after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 90%;
+            border: 1px solid #E7E7E7;
+            top: 20px;
+            left: 10px;
+            background-color: #000;
+            z-index: -1;
+        }
+
+        li:last-child:after {
+            content: none;
+        }
+
+        li:focus {
+            outline: -webkit-focus-ring-color auto 0px;
+        }
+
+    }
+
+    // .resize{
+    //     font-size: 3em;
+    // }
+}

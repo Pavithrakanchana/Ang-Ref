@@ -1,0 +1,110 @@
+<div mat-dialog-content>
+  <form class="address-verification-form" [formGroup]="addressVerificationForm">
+    <mat-accordion>
+      <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+        <mat-expansion-panel-header >
+          <mat-panel-title>
+            Policy Holder Address Verification
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+          <p>Our system has noted a correction to your entered address in accordance to Post Office records.</p>
+          <p>If the Corrected Address is accurate, please select 'Corrected Address'. </p>
+          <p>Otherwise, if your original entry is correct, select 'Original Address' and click the 'Continue' button.
+          </p>
+          <hr class="mt-2 mb-2">
+          <div class="pb-1" *ngFor="let addresslist of addressArrayObj; index as i">
+            <div class="bwr-rates-form">
+              <p class="font-weight-500">{{addresslist.name}}</p>
+            <mat-radio-group aria-label="Select an option"   id="addresslist{{i}}" formControlName="addressSelection{{i}}">
+              <div class="address-flex-container">
+                <div  class="container-list selected-address" [class.selected-address]="this.addressVerificationForm.get('addressSelection'+i)?.value === 'enteredAddress'" >
+
+                  <div class="radio-btn-container">
+
+                     <mat-radio-button value="enteredAddress" >Your Entered Address</mat-radio-button>
+
+                    <div class="form-group row">
+                      <label for="address" class="col-sm-3 col-form-label">Address</label>
+                        <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="address{{i}}" >{{addresslist.enteredAddress.streetName}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="city" class="col-sm-3 col-form-label">City</label>
+                       <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="city{{i}}" >{{addresslist.enteredAddress.city}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="state" class="col-sm-3 col-form-label">State</label>
+                       <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="state{{i}}" >{{addresslist.enteredAddress.state}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="ZIP" class="col-sm-3 col-form-label">Zip</label>
+                        <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="zip{{i}}">{{addresslist.enteredAddress.postalCode}}</span>
+                        </div>
+
+                      </div>
+                  </div>
+                </div>
+                <div  class="container-list selected-address" [class.selected-address]="this.addressVerificationForm.get('addressSelection'+i)?.value === 'correctedAddress'" >
+
+                  <div class="radio-btn-container">
+
+                     <mat-radio-button value="correctedAddress" >Corrected Address</mat-radio-button>
+
+                    <div class="form-group row">
+                      <label for="address" class="col-sm-3 col-form-label">Address</label>
+                        <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="correctaddress{{i}}" >{{addresslist.correctedAddress.fullStreetAddress}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="city" class="col-sm-3 col-form-label">City</label>
+                       <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="correctcity{{i}}" >{{addresslist.correctedAddress.city}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="state" class="col-sm-3 col-form-label">State</label>
+                       <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="correctstate{{i}}">{{addresslist.correctedAddress.state}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="zip" class="col-sm-3 col-form-label">ZIP</label>
+                        <div class="col-sm-9">
+                          <span class="form-control-plaintext" id="correctzip{{i}}">{{addresslist.correctedAddress.zipCode}}</span>
+                        </div>
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </mat-radio-group>
+            </div>
+             <hr class="mt-2 mb-2" *ngIf="i == 0">
+          </div>
+
+      </mat-expansion-panel>
+
+      <button mat-raised-button id="continue" class="mt-3 btn btn-primary btn-next float-right"  (click)="closeDialog(true)">
+        <span>Continue</span>
+    </button>
+
+    <button mat-button mat-raised-button id="cancel" class="mt-3 btn float-left"  (click)="closeDialog(false)">
+      <span>Cancel</span>
+    </button>
+
+    </mat-accordion>
+  </form>
+    </div>

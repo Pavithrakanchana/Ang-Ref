@@ -1,0 +1,234 @@
+<div class="coverages-container" id="topcontent">
+    <h2 class="bw-header3 coverages">Coverages</h2>
+</div>
+<app-messages>{{ errorMessage }}</app-messages>
+<div class="bwr-coverage-form">
+    <form class="coverages-form" [formGroup]="coveragesForm">
+        <mat-accordion [multi]="true">
+            <div class="container-list">
+                <mat-expansion-panel hideToggle [expanded]="true" id="CovOptPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="coveragesOptHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5">Policy Level Coverages</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-policycoverage-validvalues [coveragesForm]="coveragesForm"
+                        [policyCoverages]="this.policyCoverages" [layout]="this.layout">
+                    </app-policycoverage-validvalues>
+                </mat-expansion-panel>
+                <mat-expansion-panel hideToggle [expanded]="true" id="priorInsPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="priorInsHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5">Previous Insurance Information</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row" [class.pb-3]="selectedAutoInsurance !== 'Y'">
+                        <div class="col col-md-7 spacing">
+                            <mat-label class="">Does the insured/spouse have 6 months of continuous Insurance and no
+                                more than a 30 day lapse?</mat-label>
+                        </div>
+                        <div class="col col-md-4">
+                            <div class="row">
+                                <div class="col col-md-7" *ngIf="isNotRequiredBylawDisplayDropDown">
+                                    <mat-form-field class="field-full-width" appearance="outline">
+                                        <mat-select  placeholder="Previous Prioir Info" id="prePriorInfo"
+                                                    formControlName="prePriorInfo"
+                                                    (selectionChange)="onPreviousPriorInfoChange()">
+                                            <mat-option *ngFor="let prePriorInfoVal of prePriorInfoValues" [value]="prePriorInfoVal.key">
+                                                {{prePriorInfoVal.displayvalue}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col col-md-7" *ngIf="!isNotRequiredBylawDisplayDropDown">
+                                    <div class="mt-2">
+                                        <mat-radio-group class="w-100 mandatory-field" id="autoInsurance"
+                                            aria-label="Select an option" formControlName="autoInsurance"
+                                            [disabled]="prevInsuranceInfoBlockStatus.autoInsurance"
+                                            (change) = "autoInschange($event)">
+                                            <mat-radio-button class="mr-5 click-area" id="autoInsuranceYes" value="Y">
+                                                Yes
+                                            </mat-radio-button>
+                                            <mat-radio-button class="click-area" id="autoInsuranceNo" value="N">No
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </div>
+                                </div>
+                                <div class="col col-md-4">
+                                    <div class="col-md-2 col-2 pl-0">
+                                        <mat-icon class="info-icon" id="continuousCoverageHelp" aria-label="icon"
+                                            matTooltip="" aria-label="" matTooltipClass="bwr-tooltip"
+                                            (click)="loadHelpText('107')">info</mat-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6" *ngIf="selectedAutoInsurance === 'Y'">
+                            <div class="row">
+                                <div class="col-md-10 col-10">
+                                    <mat-form-field class="field-full-width coverage-dropdown"
+                                        [class.mandatory-field]="selectedAutoInsurance === 'Y' && !prevInsuranceInfoBlockStatus.priorCarrier"
+                                        appearance="outline">
+                                        <mat-label>Prior Carrier</mat-label>
+                                        <input matInput aria-label="Select Prior Carrier"
+                                            [matAutocomplete]="autoPriorCarrier" placeholder="Please Select"
+                                            id="priorCarrier" formControlName="priorCarrier"
+                                            [readonly]="prevInsuranceInfoBlockStatus.priorCarrier">
+                                        <mat-error class=" " id="priorCarriereReq"
+                                            *ngIf="hasError('priorCarrier', 'required','', '')">
+                                            A prior carrier is required when prior insurance is selected
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-autocomplete #autoPriorCarrier="matAutocomplete"
+                                        (optionSelected)="onPriorCarrierChange()" >
+                                        <mat-option *ngFor="let carrierVal of priorCarriers | async"
+                                            [value]="carrierVal.displayvalue">
+                                            {{carrierVal.displayvalue}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-md-6">
+                            <div *ngIf="selectedAutoInsurance === 'Y'">
+                                <div class="col-md-10 col-10">
+                                    <mat-form-field class="field-full-width coverage-dropdown"
+                                        [class.mandatory-field]="selectedAutoInsurance === 'Y' && !prevInsuranceInfoBlockStatus.policyLimit"
+                                        appearance="outline">
+                                        <mat-label>Prior Policy Limits</mat-label>
+                                        <mat-select placeholder="Most Recent Policy Limit" id="policyLimit"
+                                            formControlName="policyLimit"
+                                            [disabled]="prevInsuranceInfoBlockStatus.policyLimit || hasSelectedPOPBlock">
+                                            <mat-option *ngIf="!prevInsuranceInfoBlockStatus.policyLimit" value="">Please Select</mat-option>
+                                            <mat-option *ngIf="prevInsuranceInfoBlockStatus.policyLimit" value="">No Prior</mat-option>
+                                            <mat-option *ngFor="let prevPoL of coveragesObject.priorLimits"
+                                                value="{{prevPoL.key}}">
+                                                {{prevPoL.displayvalue}}</mat-option>
+                                        </mat-select>
+
+                                        <mat-error class=" " id="policyLimitReq"
+                                            *ngIf="hasError('policyLimit', 'required', '', '')">
+                                            Limits required when prior insurance is selected
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" *ngIf="selectedAutoInsurance === 'Y'">
+                        <div class="col col-md-6">
+                            <div class="row">
+                                <div class="col-md-10 col-10">
+                                    <mat-form-field class="field-full-width"
+                                        [class.mandatory-field]="selectedAutoInsurance === 'Y' && !prevInsuranceInfoBlockStatus.expiryDate"
+                                        appearance="outline">
+                                        <mat-label>Prior Policy End Date
+                                        </mat-label>
+                                        <input matInput appDateformatter [matDatepicker]="pickereffDt" id="expiryDate"
+                                            formControlName="expiryDate" maxlength="10"
+                                            [disabled]="prevInsuranceInfoBlockStatus.expiryDate || hasSelectedPOPBlock">
+                                        <mat-datepicker #pickereffDt></mat-datepicker>
+                                        <mat-datepicker-toggle matSuffix [for]="pickereffDt"></mat-datepicker-toggle>
+                                        <mat-error class=" "  id="expiryDateReq"
+                                            *ngIf="hasError('expiryDate', 'required', '', '')">
+                                            Prior Policy End Date is required when prior insurance is selected.
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-2 col-2 pl-0">
+                                    <mat-icon class="info-icon" id="endDateHelp" aria-label="icon" matTooltip=""
+                                        aria-label="" matTooltipClass="bwr-tooltip" (click)="loadHelpText('110')">info
+                                    </mat-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+                
+                <mat-expansion-panel hideToggle [expanded]="true" id="additionalDriverPanel" class="bwr-mat-expansion-panel"
+                    *ngIf="isNotRequiredDisplayPrimaryVehicleSelection">
+                    <mat-expansion-panel-header id="DriverHeaderPanel">
+                        <mat-panel-title>
+                            <h5 class="bw-header5 applicant">Primary Vehicle</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div formArrayName="primaryVehicleAssignment">
+                        <div *ngFor="let driver of this.driversData; let i = index" class="pt-2">
+                            <div [formGroupName]="i">
+                                <div class="row mb-1">
+                                    <div class="col col-2">
+                                        <h4 class="driver-name mb-2">
+                                            {{ driver.firstName }} {{ driver.middleName }}
+                                            {{ driver.lastName }}
+                                        </h4>
+                                    </div>
+                                    <div class="col col-md-6">
+                                        <div>
+                                            <div class="col-md-10 col-10">
+                                                <mat-form-field class="field-full-width coverage-dropdown" [class.mandatory-field]=""
+                                                    appearance="outline">
+                                                    <mat-label>Select Vehicle</mat-label>
+                                                    <mat-select placeholder="Select Vehicle" id="vehicle{{ i }}"
+                                                        formControlName="vehicle" (selectionChange)="vehicleSelection($event, i)">
+                                                        <mat-option value="">Please Select</mat-option>
+                                                        <mat-option *ngFor="let vehicle of this.vehicleData; let j = index;"
+                                                            [value]="vehicle.sequenceNumber">
+                                                            {{j + 1}}. {{vehicle.year}} {{vehicle.make}} {{vehicle.model}}</mat-option>
+                                                    </mat-select>
+                                                    <mat-error id="VehicleReq{{i}}" *ngIf="hasError('vehicle', 'required', i, 'primaryVehicleAssignment')">
+                                                        Please verify vehicle assignments for all drivers.
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel hideToggle [expanded]="true" id="creditPanel" class="bwr-mat-expansion-panel">
+                    <mat-expansion-panel-header id="creditHeaderPanel">
+                        <mat-panel-title>
+                            <h5 *ngIf="this.riskState !== 'PA'" class="bw-header5"> Credit Report Status</h5>
+                            <h5 *ngIf="this.riskState === 'PA'" class="bw-header5"> Underwriting Score Status</h5>
+                            <span class="material-icons open">arrow_drop_down</span>
+                            <span class="material-icons close">arrow_drop_up</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row">
+                        <div class="col">
+                            <label>
+                                <span>Status: </span>
+                                <span class="bold" *ngIf="this.creditStatusMsg !== ''"> {{ this.creditStatusMsg }}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </mat-accordion>
+        <div class="footer-buttons pt-4 pb-4">
+            <button id="back" class="btn btn-primary btn-next float-left" (click)="onClickBack(coveragesForm)">
+                <span>
+                    &lt; Back</span>
+            </button>
+            <button mat-raised-button id="next" #next class="btn btn-primary btn-next float-right"
+                (click)="onSubmit(coveragesForm)">
+                <span>Next &gt;</span>
+            </button>
+        </div>
+    </form>
+</div>

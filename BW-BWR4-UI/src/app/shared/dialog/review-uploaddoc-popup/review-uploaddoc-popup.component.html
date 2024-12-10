@@ -1,0 +1,15 @@
+<div mat-dialog-content>
+    <mat-accordion>
+        <mat-expansion-panel class="bwr-mat-expansion-panel" multi hideToggle [expanded]="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <mat-icon class="icon-position mr-2">cloud_upload</mat-icon>Upload Confirm
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <h4 class="mt-3">Policy Effective Date is <span class="bold">{{policyEffDate}}</span>.</h4>
+            <h4 class="mt-3">Are you sure you are ready to upload?</h4>
+        </mat-expansion-panel>
+        <button mat-raised-button class="btn-next float-left" [mat-dialog-close]="true" cdkFocusInitial>Yes</button>
+        <button mat-raised-button [mat-dialog-close]="false" class="float-right">No</button>
+    </mat-accordion>
+</div>

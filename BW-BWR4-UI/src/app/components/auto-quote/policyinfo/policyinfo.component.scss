@@ -1,0 +1,23 @@
+.hr-divider {
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+.bwr-alert-primary {
+    padding: 0.25rem 1.25rem;
+    line-height: 2.7;
+    .span-text {
+        position: absolute;
+        line-height: 3;
+        padding-left: 15px;
+        font-weight: 450;
+    }
+    mat-icon {        
+        line-height: 1.8;
+    }
+}
+.driver-name {
+    font-weight: 450;
+}
+.mat-error {
+    text-indent: -4px;
+}

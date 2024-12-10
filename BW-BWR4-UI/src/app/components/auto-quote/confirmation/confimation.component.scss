@@ -1,0 +1,38 @@
+.title {
+    text-align: center;
+    background-color: #025AAA;
+    color: white;
+}
+.print {
+    color: #fff;
+    background-color: #ff8300ed;
+    border-color: #ff8300ed;
+    width: 100%;
+    font-size: 14px;
+    line-height: 1.0;
+}
+
+.printlink {
+    margin: 10px;
+}
+.printDiv {
+    justify-content: center;
+    display: flex;
+    background-color: white;
+}
+
+.warning{
+    color : red;
+}
+
+.saveExit{
+    display: none !important;
+}
+
+.lblTxt {
+    text-indent: -6px;
+  }
+   
+.reminder {
+    margin-left: 8px;
+  }

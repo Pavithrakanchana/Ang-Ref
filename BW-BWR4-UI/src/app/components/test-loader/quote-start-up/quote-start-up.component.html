@@ -1,0 +1,77 @@
+<div class="content mb-30">
+      <div class="content quote-content">
+         <h2 class="p-header"><strong>BWR Start Quote Screen</strong></h2>
+         <form  [formGroup]="quoteStartForm">
+         <mat-tab-group animationDuration="0ms">
+            <mat-tab label="Create Quote">
+               <h3 class="heading-4">Create an auto quote</h3>
+                <mat-form-field appearance="outline">
+                  <mat-label>Select MCO</mat-label>
+                  <mat-select placeholder="MCO" id="mco" formControlName="mco1">
+                      <mat-option value="">Select</mat-option>
+                      <mat-option value="28">28</mat-option>
+                      <mat-option value="29">29</mat-option>
+                      <mat-option value="30">30</mat-option>
+                      <mat-option value="33">33</mat-option>
+                      <mat-option value="34">34</mat-option>
+                      <mat-option value="43">43</mat-option>
+                  </mat-select>
+              </mat-form-field>
+                <mat-form-field class="quote-full-width">
+                     <mat-label>Producer Code</mat-label>
+                     <input matInput placeholder="Producer Code" value="" id="producerCode" formControlName="producerCode">
+                     <mat-error class="mb-3" *ngIf="hasError('producerCode', 'required')"><em class="fas fa-exclamation-triangle pr-1"></em> Producer code is required  </mat-error>
+                    </mat-form-field>
+                  <mat-form-field class="quote-full-width mt-3">
+                     <mat-label>State</mat-label>
+                     <mat-select [(value)]="selected" class="form-control" placeholder="MCO" id="mco" matInput formControlName="state">
+                      <mat-option value="">Select</mat-option>
+                      <mat-option value="AZ">AZ</mat-option>
+                      <mat-option value="CO">CO</mat-option>
+                      <mat-option value="FL">FL</mat-option>
+                      <mat-option value="IL">IL</mat-option>
+                      <mat-option value="IN">IN</mat-option>
+                      <mat-option value="OH">OH</mat-option>
+                      <mat-option value="TX">TX</mat-option>
+                      <mat-option value="VA">VA</mat-option>
+                      <mat-option value="PA">PA</mat-option>
+                     </mat-select>
+                     <mat-error class="mb-3" *ngIf="hasError('mco', 'required')"><em class="fas fa-exclamation-triangle pr-1"></em> State is required  </mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="standard" class="quote-full-width mb-3">
+                     <mat-label>Rate Book</mat-label>
+                     <input matInput placeholder="Rate Book" value="" id="rateBook" formControlName="ratebook">
+                  </mat-form-field>
+                  <div class="button-wrapper mt-2">
+                     <button type="submit" class="btn btn-md theme-btn btn-primary" mat-raised-button (click)="goAuth()">Create Quote</button>
+                  </div>
+            </mat-tab>
+            <mat-tab label="Retrieve Quote">
+              <h3 class="heading-4">Retrieve a saved quote</h3>
+              <mat-form-field class="quote-full-width">
+                <mat-label>Producer Code</mat-label>
+                <input matInput placeholder="Producer Code" value="" id="producerCode" formControlName="producerCode">
+                <mat-error class="mb-3" *ngIf="hasError('producerCode', 'required')"><em class="fas fa-exclamation-triangle pr-1"></em> Producer code is required  </mat-error>
+               </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Enter Quote Number</mat-label>
+                    <input matInput placeholder="Quote Number" maxlength="15" formControlName="quote">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Select MCO</mat-label>
+                    <mat-select placeholder="MCO" id="mco" formControlName="mco">
+                        <mat-option value="">Select</mat-option>
+                        <mat-option value="28">28</mat-option>
+                        <mat-option value="29">29</mat-option>
+                        <mat-option value="30">30</mat-option>
+                        <mat-option value="33">33</mat-option>
+                        <mat-option value="34">34</mat-option>
+                        <mat-option value="43">43</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button type="submit" class="btn btn-md theme-btn btn-primary" mat-raised-button (click)="retrieveQuote()">Retrieve Quote</button>
+           </mat-tab>
+         </mat-tab-group>
+        </form>
+      </div>
+     </div>

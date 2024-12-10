@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Chatbot
+    </title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var vars = {};
+        var parts = decodeURIComponent(window.location.href).replace(/[?&]+([^=&]+)=([^&]*)/gi, 
+        function (m, key, value) {
+            vars[key] = value;
+        });
+    </script>
+    <style>
+        .dockableContainer,
+        .showDockableContainer {
+            font-size: 16px;
+            width: 100% !important;
+            max-width: 100% !important;
+            right: 0 !important;
+            height: 100% !important;
+            max-height: 100% !important;
+        }
+
+        .minimizeButton {
+            visibility: hidden;
+        }
+
+        .embeddedServiceSidebarDialogState #dialogTextTitle {
+            background-color: transparent !important;
+        }
+
+        h3 {
+            background-color: transparent !important;
+        }
+
+        body {
+            font-weight: unset;
+            font-style: unset;
+            font-size: unset;
+            font-family: unset;
+        }
+    </style>
+
+    <div id="Loading">
+        Loading...
+    </div>
+
+    <link rel="stylesheet"
+        href='https://sofa-uat-farmers--souat1.sandbox.my.salesforce-sites.com/resource/BW_EmbeddedChatScript/Bw_EmbeddedChat_Style.css' />
+    <script type="text/javascript" src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
+    <script type='text/javascript'
+        src='https://sofa-uat-farmers--souat1.sandbox.my.salesforce-sites.com/resource/BW_EmbeddedChatScript/Bw_EmbeddedChat_Init_UAT.js'></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+        function initChat() {
+            // console.log("OpenChat");
+
+            if (!window.embedded_svc) {
+                var s = document.createElement('script');
+                var ChatScript3 = "https://service.force.com/embeddedservice/5.0/esw.min.js";
+                s.setAttribute('src', ChatScript3);
+                s.onload = function () {
+                    initESW(null);
+                };
+                document.body.appendChild(s);
+            }
+            else {
+                /*var producerCode = '0288888';
+                if (!producerCode || window.opener == null) {
+                    return;
+                }*/
+                document.getElementById("Loading").hidden = true;
+
+                var bwObj = {
+                    "Page_Name__c": decodeURI(vars["Page_Name__c"]),
+                    "AgentAgencyName__c": decodeURI(vars["AgentAgencyName__c"]),
+                    "AgentFirstName__c": decodeURI(vars["AgentFirstName__c"]),
+                    "AgentLastName__c": decodeURI(vars["AgentLastName__c"]),
+                    "MCO__c": decodeURI(vars["MCO__c"]),
+                    "Producer_Code__c": decodeURI(vars["Producer_Code__c"]),
+                    "ProducerType": decodeURI(vars["ProducerType"]),
+                    "QueueId__c": decodeURI(vars["QueueId__c"]),
+                    "State_Code__c": decodeURI(vars["State_Code__c"])
+                }
+
+                // console.log('bwObj Params');
+                // console.log(bwObj);
+
+                initESW('https://service.force.com', bwObj);
+            }
+        }
+
+        function LoadChat() {
+            if ($("#esw_storage_iframe").length == 0) {
+                setTimeout(initChat, 500);
+                setTimeout(LoadChat, 700);
+                return;
+            }
+
+            if (!$(".uiButton ").length) {
+                setTimeout(LoadChat, 100);
+            } else if ($(".uiButton ").length > 0 &&
+                ($(".uiButton>.helpButtonLabel>.message ")[0].innerHTML == 'Chat with an Expert')) {
+                $('.uiButton').click();
+                //  DeleteCookies();
+            } else {
+                setTimeout(LoadChat, 100);
+            }
+        }
+        LoadChat();
+    </script>
+</body>
+
+</html>

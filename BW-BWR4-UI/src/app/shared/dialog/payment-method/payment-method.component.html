@@ -1,0 +1,12 @@
+<div class="bwr-payment-iframe-header">
+    <button class="close" mat-button aria-label="close dialog" (click)="closeDialog(false)">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h5 *ngIf="this.isDownPay" mat-dialog-title class="bw-header5">Enter Down Payment Information</h5>
+    <h5 *ngIf="!this.isDownPay" mat-dialog-title class="bw-header5">Enter Installment Payment Information</h5>
+</div>
+<!-- IFRAME -->
+
+<iframe class="bwr-payment-iframe" [src]="this.paymentIframeURL | safe" title="Payment Info">
+</iframe>
+

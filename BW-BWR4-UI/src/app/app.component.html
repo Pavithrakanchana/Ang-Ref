@@ -1,0 +1,25 @@
+<div class="overlay" *ngIf="spinner$ | async" >
+    <div class="center-spinner">
+       <mat-spinner class="spinner" diameter="40"></mat-spinner >
+    </div>
+ </div>
+<app-header id="headerContent"></app-header>
+<div class="content">
+    <mat-sidenav-container class="home-sidenav-container" [hasBackdrop]=false>
+        <mat-sidenav class="mat-sidenav pt-3 pl-4 pr-4 pb-4" mode="side" opened disableClose>
+            <div class="sidenav-label">
+                <h2 class="bold-7 mb-1">Auto Quote</h2>
+                <h5 class="">Quote Number</h5>
+                <h5 class="">{{displayID}}</h5>
+
+            </div>
+            <div class=" pb-2">
+                <app-quote-summary></app-quote-summary>
+            </div>
+           <app-stepper [step]="currentStep" ></app-stepper>
+        </mat-sidenav>
+        <mat-sidenav-content class="pt-3 pb-3  pl-4">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
+</div>

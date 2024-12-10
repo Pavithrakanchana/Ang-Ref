@@ -1,0 +1,33 @@
+.close {
+  position: relative;
+  top: -5 !important;
+  right: 0 !important;
+  padding: 0px;
+  margin: 0;
+  line-height: 10px;
+  min-width: auto;
+}
+.bwr-payment-iframe-header {
+  height: 28px;
+  background: #025aaa;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  padding: 12px 20px 30px 20px;
+}
+.bwr-payment-iframe {
+  padding: 0px 10px;
+  overflow-x: hidden;
+  height: 90%;
+  width: 100%;
+  border: 1px;
+  scroll-behavior: auto;
+  //border: none;
+}
+::ng-deep .full-width-dialog {
+  .mat-dialog-container {
+    padding: 0px !important;
+    color: #fff !important;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+}

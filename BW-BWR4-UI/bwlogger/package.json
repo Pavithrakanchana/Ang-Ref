@@ -1,0 +1,20 @@
+{
+  "name": "logger",
+  "version": "1.0.0",
+  "description": "The logging utility for quotebristolwest application",
+  "main": "logserver.js",
+  "scripts": {
+    "test": "node logserver.js"
+  },
+  "keywords": [
+    "quotebristolwest",
+    "logging"
+  ],
+  "author": "Sri Hari Rao Nadella",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "dotenv": "^6.1.0",
+    "rotating-file-stream": "^3.1.1"
+  }
+}

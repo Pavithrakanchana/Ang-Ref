@@ -1,0 +1,49 @@
+// .header-style {
+//   background: #025aaa;
+//   height: 30px;
+// }
+
+// .confirm-header {
+//   display: inline-block;
+//   font-weight: bold;
+//   color: white;
+//   margin-left: 10px;
+// }
+
+// .confirm-message {
+//   margin-left: 100px;
+// }
+
+// ::ng-deep .confirm-dailog {
+//   .mat-dialog-container {
+//     padding: 0px 16px 16px 16px !important;
+//     color: #000;
+//     overflow-y: hidden;
+//     overflow-x: hidden;
+//   }
+//   .mat-dialog-actions {
+//     display: inline;
+//   }
+// }
+
+// .icon-position {
+//   margin-top:3px;
+//   margin-left: 3px;
+//   color: white;
+// }
+
+// .upload-content {
+//   text-align: center;
+// }
+
+::ng-deep .confirm-dailog {
+  .mat-dialog-container {
+    padding: 16px 16px 16px 16px !important;
+    color: #000;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+  .mat-dialog-actions {
+    display: inline;
+  }
+}
